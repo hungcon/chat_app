@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) =>
 function Home() {
     const classes = useStyles();
     return (
-        <h1>Home</h1>
+        <h1 className={classes.link}>Home</h1>
     );
 }
 

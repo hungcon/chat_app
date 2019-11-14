@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Route , BrowserRouter as Router , Switch } from "react-router-dom";
 import PrivateRoute from './PrivateRoute';
 import Home from './Component/Template/Home';

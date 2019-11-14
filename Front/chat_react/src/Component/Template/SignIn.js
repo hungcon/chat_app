@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,7 +9,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import axios from 'axios';
 import useForm from "react-hook-form";
 
 const useStyles = makeStyles(theme => ({
@@ -46,10 +45,7 @@ export default function SignIn() {
 
   const { handleSubmit, register, errors } = useForm();
   const onSubmit = values => {
-    axios.post('http://localhost:4000/getUser', values)
-    .then(result => {
-      console.log(result);
-    })
+    console.log(values)
   };
 
   const classes = useStyles();
@@ -63,25 +59,22 @@ export default function SignIn() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Sign In
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            name="email"
+            name="username"
             variant="outlined"
             margin="normal"
             fullWidth
-            error={!!(errors && errors.email)}
-            helperText={(errors && errors.email) ? errors.email.message : ''}
-            id="email"
-            label="Email Address"
+            error={!!(errors && errors.username)}
+            helperText={(errors && errors.username) ? errors.username.message : ''}
+            id="username"
+            label="Username"
             autoFocus
             inputRef={register({
               required: 'Required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                message: "Invalid email address"
-              }
+              
             })}
           />
         
