@@ -12,6 +12,8 @@ import Container from '@material-ui/core/Container';
 //React Hook Form
 import useForm from "react-hook-form";
 
+import axios from 'axios';
+
 const useStyles = makeStyles(theme => ({
   '@global': {
     body: {
@@ -40,11 +42,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SignUp() {
+export default function SignUp(props) {
 
   const { handleSubmit, register, errors, watch } = useForm();
   const onSubmit = values => {
-    console.log(values)
+    axios.post('http://localhost:4000/createAccount', values)
+    .then(result => {
+      console.log(result.data)
+      if(result.data.status === 'OK'){
+        localStorage.setItem('userName', values.userName);
+        props.history.push('/home');
+      }
+    })
+    .catch(err => {
+      console.log(err)
+    })
   };
 
   const classes = useStyles();
@@ -96,7 +108,7 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                name="username"
+                name="userName"
                 variant="outlined"
                
                 margin="normal"

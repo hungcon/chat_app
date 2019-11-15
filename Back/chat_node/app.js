@@ -28,7 +28,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 mongoose.set('useCreateIndex', true)
-mongoose.connect('mongodb://localhost:27017/UserManagement', {useNewUrlParser: true,  useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/ChatApp', {useNewUrlParser: true,  useUnifiedTopology: true });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -4,12 +4,14 @@ import PrivateRoute from './PrivateRoute';
 import Home from './Component/Template/Home';
 import SignIn from './Component/Template/SignIn';
 import SignUp from './Component/Template/SignUp';
+import ConfigInformation from './Component/Template/ConfigInformation';
 function App() {
     return (
       <Router>
         <Switch >
             <Route path="/" exact component={SignIn} /> 
-            <PrivateRoute path="/home" exact component={Home} /> 
+            <PrivateRoute path="/home" exact component={Home} />
+            <Route path="/config-information" exact component={ConfigInformation} />
             <Route path="/sign-in" exact component={SignIn} /> 
             <Route path="/sign-up" exact component={SignUp} /> 
         </Switch >

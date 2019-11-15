@@ -1,23 +1,21 @@
 var express = require('express');
 var router = express.Router();
 var Account = require('../model/account');
-var passport = require('passport')
-  , LocalStrategy = require('passport-local').Strategy;
+var md5 = require('md5');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/getUsers', function(req, res, next) {
- 
- Account.find({}, function(err, docs){
-  res.send(docs);
- })  
-});
 
-router.post('/addUser', function(req, res, next){
-  Account.create(user, function(err, success){
+router.post('/createAccount', function(req, res, next){
+  var account = {};
+  account.userName = req.body.userName;
+  account.firstName = req.body.firstName;
+  account.lastName = req.body.lastName;
+  account.password = md5(req.body.password);
+  Account.create(account, function(err, success){
     if(err){
       res.send(err);
     }else{
@@ -26,15 +24,6 @@ router.post('/addUser', function(req, res, next){
   })
  })
 
- 
-router.post('/getUser', function(req, res, next){
-  passport.authenticate('local', function(err, user) {
-    if (err) { return next(err) };
-    if (!user) {
-      return res.send({success: 1});
-    }
-  })
- })
 
  
 
