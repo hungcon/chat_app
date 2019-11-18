@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) =>
     },
     link: {
         textDecoration: 'none',
-        color: 'white',
+        color: 'red',
     },
     button : {
         marginRight: theme.spacing(2),

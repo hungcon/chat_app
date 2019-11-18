@@ -46,7 +46,7 @@ export default function SignUp(props) {
 
   const { handleSubmit, register, errors, watch } = useForm();
   const onSubmit = values => {
-    axios.post('http://localhost:4000/createAccount', values)
+    axios.post('http://localhost:4000/create_account', values)
     .then(result => {
       console.log(result.data)
       if(result.data.status === 'OK'){
