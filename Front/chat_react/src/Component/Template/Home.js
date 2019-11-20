@@ -15,22 +15,25 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Avatar from "@material-ui/core/Avatar";
+import TextField from "@material-ui/core/TextField";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import SearchIcon from "@material-ui/icons/Search";
 
 
 const useStyles = makeStyles(theme => ({
-  menuTitle: {
+  perAvatar: {
     flexGrow: 1,
   },
   icon: {
     marginRight: theme.spacing(2),
-    
+  },
+  text: {
+    fontFamily: 'Courgette, cursive'
   },
   heroContent: {
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
   },
   cardGrid: {
     paddingTop: theme.spacing(8),
@@ -54,6 +57,7 @@ const cards = [1, 2, 3];
 export default function Home() {
   const classes = useStyles();
   const [menuState, setMenuState] = useState({anchorEl: null});
+  const [searchValue, setSearchValue] = useState('');
 
   const openMenu = (event) => {
     const anchorEl = event.currentTarget;
@@ -64,20 +68,27 @@ export default function Home() {
     setMenuState({anchorEl: null});
   };
 
+  const handleChange = (event) => {
+    setSearchValue(event.target.value);
+  }
+
+  const getSearchValue = () => {
+    console.log(searchValue)
+  }
+
   return (
     <React.Fragment>
       <CssBaseline />
       <AppBar position="relative">
         <Toolbar>
-          <Typography variant="h6" color="inherit" noWrap className={classes.menuTitle}>
-            Hung Con
-          </Typography>
+          <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
+          <Typography className={classes.perAvatar}></Typography>
           <React.Fragment>
             < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={openMenu}>
               <MenuIcon />
             </IconButton>
             <Menu anchorEl={menuState.anchorEl} open={Boolean(menuState.anchorEl)} onClose={closeMenu}>
-                <MenuItem  >Settings</MenuItem>
+                <MenuItem  >Profiles</MenuItem>
                 <MenuItem  >Sign out</MenuItem>
             </Menu>  
           </React.Fragment>
@@ -87,26 +98,27 @@ export default function Home() {
         {/* Hero unit */}
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
-            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-              Album layout
+            <Typography component="h2" variant="h3" align="center" color="textPrimary" gutterBottom className={classes.text} >
+             Welcome to chat app
             </Typography>
-            <Typography variant="h5" align="center" color="textSecondary" paragraph>
-              Something short and leading about the collection below—its contents, the creator, etc.
+            <Typography variant="h5" align="center" color="textSecondary" paragraph className={classes.text}>         
+                Your friends list is shown below. You can search more another friend by searching by email in search box.
             </Typography>
-            <div className={classes.heroButtons}>
-              <Grid container spacing={2} justify="center">
-                <Grid item>
-                  <Button variant="contained" color="primary">
-                    Main call to action
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button variant="outlined" color="primary">
-                    Secondary action
-                  </Button>
-                </Grid>
-              </Grid>
-            </div>
+            <TextField
+              label="Search Friend"
+              fullWidth
+              variant="outlined"
+              onChange={handleChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment>
+                    <IconButton onClick={getSearchValue}>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
           </Container>
         </div>
         <Container className={classes.cardGrid} maxWidth="md">
@@ -122,17 +134,14 @@ export default function Home() {
                   />
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
-                      Heading
-                    </Typography>
-                    <Typography>
-                      This is a media card. You can use this section to describe the content.
+                      Friend Name
                     </Typography>
                   </CardContent>
-                  <CardActions>
-                    <Button size="small" color="primary">
+                  <CardActions >
+                    <Button size="small" color="primary" variant="contained">
                       Send Message
                     </Button>
-                    <Button size="small" color="primary">
+                    <Button size="small" color="secondary" variant="contained">
                       Unfriend
                     </Button>
                   </CardActions>
