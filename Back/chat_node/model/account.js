@@ -6,15 +6,13 @@ var AccountSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+    trim: true
+  },
   password: {
-    type: String,
-    required: true,
-  },
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
     type: String,
     required: true,
   }

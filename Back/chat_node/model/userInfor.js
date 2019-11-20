@@ -10,6 +10,12 @@ var UserInforSchema = new mongoose.Schema({
       type: String,
       unique: true,
   },
+  firstName: {
+    type: String
+  },
+  lastName: {
+    type: String,
+  },
   avatarPath: {
     type: String
   }

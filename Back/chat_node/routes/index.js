@@ -36,13 +36,27 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.post('/sign-in', function(req, res) {
+  console.log('a');
+  Account.findOne({userName: req.body.username}, function(err, doc){
+    if (err) {
+      res.send(err);
+    } else {
+      if (doc.password == md5(req.body.password)){
+        
+        res.send({status: "OK"});
+      }
+    }
+  });
+});
+
 
 router.post('/create_account', function(req, res, next){
-  var account = {};
-  account.userName = req.body.userName;
-  account.firstName = req.body.firstName;
-  account.lastName = req.body.lastName;
-  account.password = md5(req.body.password);
+  var account = {
+    userName: req.body.userName,
+    email: req.body.email,
+    password: md5(req.body.password)
+  };
   Account.create(account, function(err, success){
     if(err){
       res.send(err);

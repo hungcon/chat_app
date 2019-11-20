@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
+import Grid from '@material-ui/core/Grid';
 import useForm from "react-hook-form";
 import axios from "axios";
 
@@ -122,52 +123,68 @@ export default function ConfigInformation(props) {
                 <CssBaseline />
                 <Container maxWidth="sm" className={classes.container}>
                     {activeStep === 0 &&
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <img src="./images/email.jpg" className={classes.img} alt=''/>
-                        <TextField
-                            className={classes.input}
-                            required
-                            name="email"
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            error={!!(errors && errors.email)}
-                            helperText={(errors && errors.email) ? errors.email.message : ''}
-                            id="email"
-                            label="Email Address"
-                            autoFocus
-                            inputRef={register({
-                            required: 'Required',
-                            pattern: {
-                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                                message: "Invalid email address"
-                                }
-                            })}
-                        />
-                        <TextField
-                            className={classes.input}
-                            name="phoneNumber"
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            id="phoneNumber"
-                            label="Phone Number"
-                            inputRef={register({
-                                
-                            })}
-                        />
-                        <Button disabled={activeStep === 0} onClick={handleBack} className={classes.back}>
-                            Back
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            className={classes.next}
-                        >
-                            Next
-                        </Button>
-                    </form>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <img src="./images/email.jpg" className={classes.img} alt=''/>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        autoFocus
+                                        autoComplete="fname"
+                                        name="firstName"
+                                        variant="outlined"
+                                        
+                                        fullWidth
+                                        error={!!(errors && errors.firstName)}
+                                        helperText={(errors && errors.firstName) ? errors.firstName.message : ''}
+                                        id="firstName"
+                                        label="First Name"
+                                        inputRef={register({
+                                        required: 'Required',
+                                        })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        variant="outlined"
+                                        
+                                        fullWidth
+                                        error={!!(errors && errors.lastName)}
+                                        helperText={(errors && errors.lastName) ? errors.lastName.message : ''}
+                                        id="lastName"
+                                        label="Last Name"
+                                        name="lastName"
+                                        autoComplete="lname"
+                                        inputRef={register({
+                                        required: 'Required',
+                                        })}
+                                    />
+                                </Grid>
+                            </Grid>
+                            
+                            <TextField
+                                className={classes.input}
+                                name="phoneNumber"
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                id="phoneNumber"
+                                label="Phone Number"
+                                inputRef={register({
+                                    
+                                })}
+                            />
+                            <Button disabled={activeStep === 0} onClick={handleBack} className={classes.back}>
+                                Back
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                className={classes.next}
+                            >
+                                Next
+                            </Button>
+                        </form>
                     }
                     {activeStep === 1 &&
                     <form onSubmit={getAvatarFile} className={classes.form}>

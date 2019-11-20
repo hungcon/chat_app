@@ -51,7 +51,7 @@ export default function SignUp(props) {
       console.log(result.data)
       if(result.data.status === 'OK'){
         localStorage.setItem('userName', values.userName);
-        props.history.push('/home');
+        props.history.push('/config-information');
       }
     })
     .catch(err => {
@@ -73,36 +73,25 @@ export default function SignUp(props) {
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} >
               <TextField
+                className={classes.input}
+                required
+                name="email"
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                error={!!(errors && errors.email)}
+                helperText={(errors && errors.email) ? errors.email.message : ''}
+                id="email"
+                label="Email Address"
                 autoFocus
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                
-                fullWidth
-                error={!!(errors && errors.firstName)}
-                helperText={(errors && errors.firstName) ? errors.firstName.message : ''}
-                id="firstName"
-                label="First Name"
                 inputRef={register({
-                  required: 'Required',
-                })}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                
-                fullWidth
-                error={!!(errors && errors.lastName)}
-                helperText={(errors && errors.lastName) ? errors.lastName.message : ''}
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-                inputRef={register({
-                  required: 'Required',
+                required: 'Required',
+                pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                    message: "Invalid email address"
+                    }
                 })}
               />
             </Grid>
@@ -110,7 +99,7 @@ export default function SignUp(props) {
               <TextField
                 name="userName"
                 variant="outlined"
-               
+                required
                 margin="normal"
                 fullWidth
                 error={!!(errors && errors.username)}
@@ -127,6 +116,7 @@ export default function SignUp(props) {
               <TextField
                 variant="outlined"
                 fullWidth
+                required
                 error={!!(errors && errors.password)}
                 helperText={(errors && errors.password) ? errors.password.message : ''}
                 name="password"
@@ -149,7 +139,7 @@ export default function SignUp(props) {
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
-               
+                required
                 fullWidth
                 error={!!(errors && errors.retypePassword)}
                 helperText={(errors && errors.retypePassword) ? errors.retypePassword.message : ''}

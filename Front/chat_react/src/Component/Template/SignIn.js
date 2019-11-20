@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import useForm from "react-hook-form";
+import axios from "axios";
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -41,11 +42,21 @@ const useStyles = makeStyles(theme => ({
 
 
 
-export default function SignIn() {
+export default function SignIn(props) {
 
   const { handleSubmit, register, errors } = useForm();
   const onSubmit = values => {
-    console.log(values)
+    axios.post('http://localhost:4000/sign-in', values)
+    .then(result => {
+      console.log(result);
+      if(result.data.status === "OK"){
+        localStorage.setItem('userName', values.username);
+        props.history.push('/home');
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
   };
 
   const classes = useStyles();
