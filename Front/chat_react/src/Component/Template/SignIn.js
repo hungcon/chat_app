@@ -1,4 +1,4 @@
-import React from 'react';
+import React , {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,6 +9,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Snackbar from '@material-ui/core/Snackbar';
 import useForm from "react-hook-form";
 import axios from "axios";
 
@@ -43,24 +44,31 @@ const useStyles = makeStyles(theme => ({
 
 
 export default function SignIn(props) {
-
+  const classes = useStyles();
   const { handleSubmit, register, errors } = useForm();
+  const [ message, setMessage ] = useState('');
+  const [ open, setOpen ] = useState(false);
+
   const onSubmit = values => {
     axios.post('http://localhost:4000/sign-in', values)
     .then(result => {
       console.log(result);
-      if(result.data.status === "OK"){
-        localStorage.setItem('userName', values.username);
-        props.history.push('/home');
-      }
+      let message = result.data.message;
+      // if(result.data.status === "OK"){
+      //   localStorage.setItem('userName', values.username);
+      //   props.history.push('/home');
+      // }
+      setMessage(message);
+      setOpen(true);
     })
     .catch(err => {
       console.log(err);
     })
   };
 
-  const classes = useStyles();
-
+  const closeSnackbar = () => {
+    setOpen(false);
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -135,6 +143,12 @@ export default function SignIn(props) {
           </Grid>
         </form>
       </div>
+      <Snackbar
+        autoHideDuration={2000}
+        message={message}
+        open={open}
+        onClose={closeSnackbar}
+      />
     </Container>
   );
 

@@ -37,14 +37,18 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/sign-in', function(req, res) {
-  console.log('a');
   Account.findOne({userName: req.body.username}, function(err, doc){
     if (err) {
-      res.send(err);
+      res.status(201).send({message: 'Internal server error.'});
     } else {
-      if (doc.password == md5(req.body.password)){
-        
-        res.send({status: "OK"});
+      if (doc === null) {
+        res.status(201).send({message: 'Account is not exists.'})
+      } else {
+        if (doc.password == md5(req.body.password)){
+          res.status(201).send({message: 'OK'});
+        } else {
+          res.status(201).send({message: 'Username or password is not correct.'})
+        }
       }
     }
   });
