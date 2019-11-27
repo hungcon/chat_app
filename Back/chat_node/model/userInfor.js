@@ -1,5 +1,9 @@
 var mongoose = require('mongoose');
 var UserInforSchema = new mongoose.Schema({
+  userName: {
+    type: Schema.Types.ObjectId,
+    ref: 'Account'
+  },
   email: {
     type: String,
     unique: true,

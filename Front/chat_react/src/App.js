@@ -12,7 +12,7 @@ function App() {
         <Switch >
             <Route path="/" exact component={SignIn} /> 
             <PrivateRoute path="/home" exact component={Home} />
-            <Route path="/config-information" exact component={ConfigInformation} />
+            <PrivateRoute path="/config-information" exact component={ConfigInformation} />
             <Route path="/message-history" exact component={MessageHistory} />
             <Route path="/sign-in" exact component={SignIn} /> 
             <Route path="/sign-up" exact component={SignUp} /> 

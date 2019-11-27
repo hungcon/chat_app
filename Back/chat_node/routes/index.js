@@ -39,7 +39,7 @@ router.get('/', function(req, res, next) {
 router.post('/sign-in', function(req, res) {
   Account.findOne({userName: req.body.username}, function(err, doc){
     if (err) {
-      res.status(201).send({message: 'Internal server error.'});
+      res.status(202).send({message: 'Internal server error.'});
     } else {
       if (doc === null) {
         res.status(201).send({message: 'Account is not exists.'})
@@ -47,7 +47,7 @@ router.post('/sign-in', function(req, res) {
         if (doc.password == md5(req.body.password)){
           res.status(201).send({message: 'OK'});
         } else {
-          res.status(201).send({message: 'Username or password is not correct.'})
+          res.status(201).send({message: 'Password is not correct.'})
         }
       }
     }
@@ -58,16 +58,30 @@ router.post('/sign-in', function(req, res) {
 router.post('/create_account', function(req, res, next){
   var account = {
     userName: req.body.userName,
-    email: req.body.email,
     password: md5(req.body.password)
   };
-  Account.create(account, function(err, success){
-    if(err){
-      res.send(err);
-    }else{
-      res.send({status: 'OK'})
-    }
-  })
+  Account.findOne({userName: req.body.userName}, 
+    function(err, doc){
+      if (err) {
+        res.status(202).send({message: 'Internal server error.'});
+      } else {
+        console.log(doc)
+        if(doc !== null) {
+          if(doc.userName == req.body.userName){
+            res.status(201).send({message: 'Username already exists'})
+          }
+        } else {
+          Account.create(account, function(err, success){
+            if(err){
+              console.log(err);
+              res.status(202).send({message: 'Internal server error.'});
+            }else{
+              res.status(201).send({message: 'OK'});
+            }
+          })
+        }
+      }
+  });
  });
 
  router.post('/create_user_information', upload.single('avatarPath'), function(req, res, next){

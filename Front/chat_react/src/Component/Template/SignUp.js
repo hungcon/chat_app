@@ -46,13 +46,14 @@ export default function SignUp(props) {
 
   const { handleSubmit, register, errors, watch } = useForm();
   const onSubmit = values => {
+    // console.log(values)
     axios.post('http://localhost:4000/create_account', values)
     .then(result => {
       console.log(result.data)
-      if(result.data.status === 'OK'){
-        localStorage.setItem('userName', values.userName);
-        props.history.push('/config-information');
-      }
+      // if(result.data.status === 'OK'){
+      //   localStorage.setItem('userName', values.userName);
+      //   props.history.push('/config-information');
+      // }
     })
     .catch(err => {
       console.log(err)
@@ -73,34 +74,12 @@ export default function SignUp(props) {
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
-            <Grid item xs={12} >
-              <TextField
-                className={classes.input}
-                required
-                name="email"
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                error={!!(errors && errors.email)}
-                helperText={(errors && errors.email) ? errors.email.message : ''}
-                id="email"
-                label="Email Address"
-                autoFocus
-                inputRef={register({
-                required: 'Required',
-                pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                    message: "Invalid email address"
-                    }
-                })}
-              />
-            </Grid>
             <Grid item xs={12}>
               <TextField
                 name="userName"
                 variant="outlined"
                 required
-                margin="normal"
+                autoFocus
                 fullWidth
                 error={!!(errors && errors.username)}
                 helperText={(errors && errors.username) ? errors.username.message : ''}

@@ -46,28 +46,43 @@ const useStyles = makeStyles(theme => ({
 export default function SignIn(props) {
   const classes = useStyles();
   const { handleSubmit, register, errors } = useForm();
-  const [ message, setMessage ] = useState('');
-  const [ open, setOpen ] = useState(false);
+  const [snackbar, setSnackbar] = useState({});
 
   const onSubmit = values => {
     axios.post('http://localhost:4000/sign-in', values)
     .then(result => {
-      console.log(result);
-      let message = result.data.message;
-      // if(result.data.status === "OK"){
-      //   localStorage.setItem('userName', values.username);
-      //   props.history.push('/home');
-      // }
-      setMessage(message);
-      setOpen(true);
+       //Lấy thông điệp trả về
+       let message = result.data.message;
+      if (result.status === 201){
+        if(result.data.message === "OK"){
+          localStorage.setItem('userName', values.username);
+          props.history.push('/config-information');
+        } else {
+          setSnackbar({
+            message,
+            open: true
+          });
+        }
+      } else {
+        setSnackbar({
+          mesage: 'Internal server error',
+          open: true
+        });
+      }
     })
     .catch(err => {
-      console.log(err);
+      setSnackbar({
+        mesage: 'System error.',
+        open: true
+      });
     })
   };
 
   const closeSnackbar = () => {
-    setOpen(false);
+    setSnackbar({
+      message: '',
+      open: false
+    })
   }
 
   return (
@@ -145,8 +160,8 @@ export default function SignIn(props) {
       </div>
       <Snackbar
         autoHideDuration={2000}
-        message={message}
-        open={open}
+        message={snackbar.message}
+        open={snackbar.open}
         onClose={closeSnackbar}
       />
     </Container>

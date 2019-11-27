@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) =>
         height: '300px',
     },
     container: {
-        marginTop: theme.spacing(5),
+        marginTop: theme.spacing(3),
     },
     next:{
         borderRadius: '5em',
@@ -60,16 +60,14 @@ export default function ConfigInformation(props) {
     
     const classes = useStyles();
     const { handleSubmit, register, errors } = useForm();
-    const [email, setEmail] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [userInfor , setUserInfor] = useState({firstName:'', lastName: '', phoneNumber: '', email: ''})
     const [avatarFile, setAvatarFile] = useState(null);
     const fileInput = useRef(null);
     const [activeStep, setActiveStep] = useState(0);
     const steps = getSteps();
 
     const onSubmit = values => {
-        setEmail(values.email);
-        setPhoneNumber(values.phoneNumber);
+        setUserInfor(values);
         handleNext();
       };
     
@@ -88,24 +86,9 @@ export default function ConfigInformation(props) {
     };
 
     const finish = () => {
-        // var userInfor = new FormData();
-        // userInfor.append('email', email);
-        // userInfor.append('phoneNumber', phoneNumber);
-        // userInfor.append('avatar', avatarFile);
-
-        var userInfor = {
-            email: email,
-            phoneNumber: phoneNumber,
-            avatar: avatarFile
-        };
-        axios.post('http://localhost:4000/create_user_information', userInfor, {headers: {'Content-Type': 'multipart/form-data'}})
-        .then(result => {
-         console.log(result.data)
-        
-        })
-        .catch(err => {
-            console.log(err)
-        })
+        console.log(userInfor);
+        console.log(localStorage.getItem('userName'));
+        console.log(avatarFile);
     }
     
     
@@ -159,20 +142,42 @@ export default function ConfigInformation(props) {
                                         })}
                                     />
                                 </Grid>
+                                <Grid item xs={12} >
+                                    <TextField
+                                        
+                                        name="email"
+                                        variant="outlined"
+                                        fullWidth
+                                        error={!!(errors && errors.email)}
+                                        helperText={(errors && errors.email) ? errors.email.message : ''}
+                                        id="email"
+                                        label="Email Address"
+                                        autoFocus
+                                        inputRef={register({
+                                        required: 'Required',
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                                            message: "Invalid email address"
+                                            }
+                                        })}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} >
+                                    <TextField
+                                    className={classes.input}
+                                    name="phoneNumber"
+                                    variant="outlined"
+                                    error={!!(errors && errors.phoneNumber)}
+                                    helperText={(errors && errors.phoneNumber) ? errors.phoneNumber.message : ''}
+                                    fullWidth
+                                    id="phoneNumber"
+                                    label="Phone Number"
+                                    inputRef={register({
+                                        required: 'Required',
+                                    })}
+                                    />
+                                </Grid>
                             </Grid>
-                            
-                            <TextField
-                                className={classes.input}
-                                name="phoneNumber"
-                                variant="outlined"
-                                margin="normal"
-                                fullWidth
-                                id="phoneNumber"
-                                label="Phone Number"
-                                inputRef={register({
-                                    
-                                })}
-                            />
                             <Button disabled={activeStep === 0} onClick={handleBack} className={classes.back}>
                                 Back
                             </Button>
