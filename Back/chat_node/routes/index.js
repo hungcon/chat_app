@@ -39,7 +39,7 @@ router.get('/', function(req, res, next) {
 router.post('/sign-in', function(req, res) {
   Account.findOne({userName: req.body.username}, function(err, doc){
     if (err) {
-      res.status(202).send({message: 'Internal server error.'});
+      res.status(401).send({message: 'Internal server error.'});
     } else {
       if (doc === null) {
         res.status(201).send({message: 'Account is not exists.'})
@@ -63,9 +63,8 @@ router.post('/create_account', function(req, res, next){
   Account.findOne({userName: req.body.userName}, 
     function(err, doc){
       if (err) {
-        res.status(202).send({message: 'Internal server error.'});
+        res.status(401).send({message: 'Internal server error.'});
       } else {
-        console.log(doc)
         if(doc !== null) {
           if(doc.userName == req.body.userName){
             res.status(201).send({message: 'Username already exists'})
@@ -74,7 +73,7 @@ router.post('/create_account', function(req, res, next){
           Account.create(account, function(err, success){
             if(err){
               console.log(err);
-              res.status(202).send({message: 'Internal server error.'});
+              res.status(401).send({message: 'Internal server error.'});
             }else{
               res.status(201).send({message: 'OK'});
             }
@@ -84,15 +83,37 @@ router.post('/create_account', function(req, res, next){
   });
  });
 
- router.post('/create_user_information', upload.single('avatarPath'), function(req, res, next){
-    console.log(req.body);
-    // UserInfor.create(userInfor, function(err, success){
-    //   if(err){
-    //     res.send(err);
-    //   }else{
-    //     res.send({status: 'OK'})
-    //   }
-    // })
+ router.post('/create_user_information', function(req, res){
+    Account.findOne({userName: req.body.userName}, function(err, doc){
+      if( err ){
+        res.status(401).send({message: 'Internal server error.'})
+      } else {
+        console.log(doc._id);
+        var userInfor = {
+          userName: doc._id,
+          email: req.body.email,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          phoneNumber: req.body.phoneNumber
+        };
+        UserInfor.create(userInfor, function(err, success){
+          if(err){
+            res.status(401).send({message: 'Internal server error.'});
+          }else{
+            res.status(201).send({message: 'OK'});
+          }
+        });
+
+        UserInfor.findOne({email: req.body.email})
+        .populate('Account')
+        .exec(function(err, doc){
+          if(err){
+            console.log(err)
+          }
+          console.log(doc);
+        })
+      }
+    })
  });
 
 

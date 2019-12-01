@@ -86,9 +86,15 @@ export default function ConfigInformation(props) {
     };
 
     const finish = () => {
-        console.log(userInfor);
-        console.log(localStorage.getItem('userName'));
-        console.log(avatarFile);
+        userInfor.userName = localStorage.getItem('userName');
+        
+        axios.post('http://localhost:4000/create_user_information',userInfor)
+        .then(result => {
+            console.log(result);
+        })
+        .catch(err => {
+            console.log(err)
+        });
     }
     
     
@@ -152,7 +158,6 @@ export default function ConfigInformation(props) {
                                         helperText={(errors && errors.email) ? errors.email.message : ''}
                                         id="email"
                                         label="Email Address"
-                                        autoFocus
                                         inputRef={register({
                                         required: 'Required',
                                         pattern: {

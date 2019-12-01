@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 var UserInforSchema = new mongoose.Schema({
   userName: {
     type: Schema.Types.ObjectId,
@@ -19,9 +20,6 @@ var UserInforSchema = new mongoose.Schema({
   },
   lastName: {
     type: String,
-  },
-  avatarPath: {
-    type: String
   }
 });
 var UserInfor = mongoose.model('UserInfor', UserInforSchema);
