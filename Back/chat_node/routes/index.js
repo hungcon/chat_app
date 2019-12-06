@@ -45,7 +45,7 @@ router.post('/sign-in', function(req, res) {
         res.status(201).send({message: 'Account is not exists.'})
       } else {
         if (doc.password == md5(req.body.password)){
-          res.status(201).send({message: 'OK'});
+          res.status(201).send({message: 'OK', checkConfiguration: doc.checkConfiguration});
         } else {
           res.status(201).send({message: 'Password is not correct.'})
         }
@@ -58,7 +58,8 @@ router.post('/sign-in', function(req, res) {
 router.post('/create_account', function(req, res, next){
   var account = {
     userName: req.body.userName,
-    password: md5(req.body.password)
+    password: md5(req.body.password),
+    checkConfiguration: 0,
   };
   Account.findOne({userName: req.body.userName}, 
     function(err, doc){
@@ -88,9 +89,8 @@ router.post('/create_account', function(req, res, next){
       if( err ){
         res.status(401).send({message: 'Internal server error.'})
       } else {
-        console.log(doc._id);
         var userInfor = {
-          userName: doc._id,
+          accounts: doc._id,
           email: req.body.email,
           firstName: req.body.firstName,
           lastName: req.body.lastName,
@@ -103,17 +103,17 @@ router.post('/create_account', function(req, res, next){
             res.status(201).send({message: 'OK'});
           }
         });
-
-        UserInfor.findOne({email: req.body.email})
-        .populate('Account')
-        .exec(function(err, doc){
-          if(err){
-            console.log(err)
-          }
-          console.log(doc);
-        })
       }
     })
+            // UserInfor.findOne({email: 'hungcon.5070@gmail.com'})
+            // .populate('accounts')
+            // .exec(function(err, doc){
+            //   if(err){
+            //     console.log(err)
+            //   }
+            //   res.send(doc);
+            // })
+            
  });
 
 

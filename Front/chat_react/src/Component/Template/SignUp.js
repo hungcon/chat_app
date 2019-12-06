@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,6 +9,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Snackbar from '@material-ui/core/Snackbar';
 //React Hook Form
 import useForm from "react-hook-form";
 
@@ -45,18 +46,44 @@ const useStyles = makeStyles(theme => ({
 export default function SignUp(props) {
 
   const { handleSubmit, register, errors, watch } = useForm();
+  const [snackbar, setSnackbar] = useState({});
+  
   const onSubmit = values => {
     // console.log(values)
     axios.post('http://localhost:4000/create_account', values)
     .then(result => {
+      //Lấy thông điệp trả về
+      let message = result.data.message;
       console.log(result.data)
-      // if(result.data.status === 'OK'){
-      //   localStorage.setItem('userName', values.userName);
-      //   props.history.push('/config-information');
-      // }
+      if (result.status === 201){
+        if(result.data.message === "OK"){
+          localStorage.setItem('userName', values.username);
+          props.history.push('/config-information')
+        } else {
+          setSnackbar({
+            message,
+            open: true
+          });
+        }
+      } else {
+        setSnackbar({
+          mesage: 'Internal server error',
+          open: true
+        });
+      }
     })
     .catch(err => {
-      console.log(err)
+      setSnackbar({
+        mesage: 'System error.',
+        open: true
+      });
+    })
+  };
+
+  const closeSnackbar = () => {
+    setSnackbar({
+      message: '',
+      open: false
     })
   };
 
@@ -151,7 +178,12 @@ export default function SignUp(props) {
           </Grid>
         </form>
       </div>
-      
+      <Snackbar
+        autoHideDuration={2000}
+        message={snackbar.message}
+        open={snackbar.open}
+        onClose={closeSnackbar}
+      />
     </Container>
   );
 }

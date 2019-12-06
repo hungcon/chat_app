@@ -9,6 +9,10 @@ var AccountSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  checkConfiguration: {
+    type: Number,
+    required: true
   }
 });
 var Account = mongoose.model('Account', AccountSchema);

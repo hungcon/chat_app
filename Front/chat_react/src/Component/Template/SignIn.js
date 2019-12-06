@@ -52,11 +52,16 @@ export default function SignIn(props) {
     axios.post('http://localhost:4000/sign-in', values)
     .then(result => {
        //Lấy thông điệp trả về
-       let message = result.data.message;
+      let message = result.data.message;
       if (result.status === 201){
         if(result.data.message === "OK"){
           localStorage.setItem('userName', values.username);
-          props.history.push('/config-information');
+          if (result.data.checkConfiguration === 0) {
+             props.history.push('/config-information');
+          }else {
+            props.history.push('/home');
+          }
+          
         } else {
           setSnackbar({
             message,
