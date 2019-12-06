@@ -12,8 +12,8 @@ import {
     ListItemText, 
     ListItemIcon 
 } from '@material-ui/core';
-import SendIcon from '@material-ui/icons/SendTwoTone';
-import Box from '@material-ui/core/Box';
+import Fab from '@material-ui/core/Fab';
+import Send from '@material-ui/icons/SendSharp';
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -27,86 +27,232 @@ const useStyles = makeStyles(theme => ({
     },
     drawerPaper: {
         width: drawerWidth,
+        backgroundColor: '#F5DEB3',
     },
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
-       
+        maxWidth: '65%',
+        maxHeight: '90%'
+    },
+    listMessage: {
+        // width: '87%',
+        maxHeight: '500px',
+        overflowY: 'scroll',
+        overflowX: 'hidden',
     },
     toolbar: theme.mixins.toolbar,
     receivedMsg: {
         borderRadius: '3px',
-        backgroundColor: '#ebebeb'
+        backgroundColor: '#ebebeb',
     },
     sendMsg: {
         borderRadius: '3px',
-        backgroundColor: '#05728f'
+        backgroundColor: '#05728f',
+
     },
     time: {
         fontSize: '13px',
+    },
+    type: {
+        display: 'flex',
+        padding: theme.spacing(3),
+
+    },
+    button: {
+      margin: 'auto',
+    },
+    textField: {
+        flexGrow: 1,
+        maxWidth: '90%',
+    },
+    statistic: {
+        margin: theme.spacing(2),
+        
     }
 }));
 
-    const receiveds = [1,2,3];
+    const receiveds = [
+        {
+            _id: 1,
+            sender: 'Chung',
+            receiver: 'Hưng',
+            content: 'Hôm nay có đi học ko?',
+            time: '20-11-2019 10:15'
+        },
+        {
+            _id: 2,
+            sender: 'Hưng',
+            receiver: 'Chung',
+            content: 'Nay lạnh, nghỉ',
+            time: '20-11-2019 10:16'
+        },
+        {
+            _id: 3,
+            sender: 'Chung',
+            receiver: 'Hưng',
+            content: 'Chiều đi mua quần áo ko?',
+            time: '20-11-2019 10:17'
+        },
+        {
+            _id: 4,
+            sender: 'Hưng',
+            receiver: 'Chung',
+            content: 'Nay lạnh, nghỉ',
+            time: '20-11-2019 10:18'
+        },
+        {
+            _id: 5,
+            sender: 'Chung',
+            receiver: 'Hưng',
+            content: 'Tối có phải đi học ko?',
+            time: '20-11-2019 10:19'
+        },
+        {
+            _id: 6,
+            sender: 'Hưng',
+            receiver: 'Chung',
+            content: 'Nay lạnh, nghỉ',
+            time: '20-11-2019 10:20'
+        },
+        {
+            _id: 7,
+            sender: 'Chung',
+            receiver: 'Hưng',
+            content: 'Tối có phải đi học ko?',
+            time: '20-11-2019 10:19'
+        },
+        {
+            _id: 8,
+            sender: 'Hưng',
+            receiver: 'Chung',
+            content: 'Nay lạnh, nghỉ',
+            time: '20-11-2019 10:20'
+        },
+        {
+            _id: 9,
+            sender: 'Chung',
+            receiver: 'Hưng',
+            content: 'Tối có phải đi học ko?',
+            time: '20-11-2019 10:19'
+        },
+        {
+            _id: 10,
+            sender: 'Hưng',
+            receiver: 'Chung',
+            content: 'Nay lạnh, nghỉ',
+            time: '20-11-2019 10:20'
+        },
+        {
+            _id: 11,
+            sender: 'Chung',
+            receiver: 'Hưng',
+            content: 'Tối có phải đi học ko?',
+            time: '20-11-2019 10:19'
+        },
+        {
+            _id: 12,
+            sender: 'Hưng',
+            receiver: 'Chung',
+            content: 'Nay lạnh, nghỉ',
+            time: '20-11-2019 10:20'
+        },{
+            _id: 13,
+            sender: 'Chung',
+            receiver: 'Hưng',
+            content: 'Tối có phải đi học ko?',
+            time: '20-11-2019 10:19'
+        },
+        {
+            _id: 14,
+            sender: 'Hưng',
+            receiver: 'Chung',
+            content: 'Nay lạnh, nghỉ',
+            time: '20-11-2019 10:20'
+        },
+        {
+            _id: 15,
+            sender: 'Chung',
+            receiver: 'Hưng',
+            content: 'Tối có phải đi học ko?',
+            time: '20-11-2019 10:19'
+        },
+        {
+            _id: 16,
+            sender: 'Hưng',
+            receiver: 'Chung',
+            content: 'Nay lạnh, nghỉ',
+            time: '20-11-2019 10:20'
+        }
+    ];
 
-export default function MessageHistory() {
+
+export default function MessageHistory(props) {
     const classes = useStyles();
 
     return (
        <React.Fragment>
-            <Header ></Header>
+            <Header history={props.history}></Header>
             <div className={classes.root}>
-            <Drawer
-                className={classes.drawer}
-                variant="permanent"
-                classes={{
-                paper: classes.drawerPaper,
-                }}
-            >
-                <div className={classes.toolbar} />
-                <List>
-                {['Hưng Phùng', 'Chung Biện', 'No Name', 'Đẹp Trai'].map((text, index) => (
-                    <ListItem button key={text}>
-                        <ListItemIcon>
-                            <Avatar alt="Hung Con" src="./images/per-avatar.jpg"  />
-                        </ListItemIcon>
-                        <ListItemText primary={text} />
-                    </ListItem>
-                ))}
-                </List>
-            </Drawer>
-            <main className={classes.content}>
-                {/* tin nhắn đến */}
-                { receiveds.map( r => (
-                        <Grid container spacing={2} key={r}>
-                            <Grid item>
+                <Drawer
+                    className={classes.drawer}
+                    variant="permanent"
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div className={classes.toolbar} />
+                    <List>
+                    {['Hưng Phùng', 'Chung Biện', 'No Name', 'Đẹp Trai'].map((text, index) => (
+                        <ListItem button key={text}>
+                            <ListItemIcon>
                                 <Avatar alt="Hung Con" src="./images/per-avatar.jpg"  />
-                            </Grid>
-                            <Grid item  className={1 === 1 ? classes.receivedMsg: classes.sendMsg}>
-                                <Typography>
-                                    Abc hôm nay đi chơi hay đi học?
-                                </Typography>
-                                <Typography className={classes.time}>
-                                    20-11-2019 11:05
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    ))
-                }
-                    
-                    {/* tin đã gửi */}
-                    <Grid container spacing={2} justify="flex-end" >
-                        <Grid item flexGrow={1}></Grid>
-                        <Grid item className={classes.sendMsg}>
-                            <Typography>
-                                Hnay t đi học
-                            </Typography>
-                            <Typography className={classes.time}>
-                                20-11-2019 11:05
-                            </Typography>
-                        </Grid>
-                    </Grid>
-            </main>
+                            </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
+                    </List>
+                </Drawer>
+                <div className={classes.content}>
+                    <div className={classes.listMessage} >
+                        { receiveds.map( msg => (
+                                <Grid container spacing={2} key={msg._id} justify={msg.sender === 'Hưng' ? 'flex-end' : 'flex-start'}>
+                                    {
+                                        msg.sender === 'Hưng' ? 
+                                        <Grid item></Grid> 
+                                        :
+                                        <Grid item>
+                                            <Avatar alt="Hung Con" src="./images/per-avatar.jpg"  />
+                                        </Grid>
+                                    }
+                                    <Grid item  className={msg.sender ===  'Chung'? classes.receivedMsg: classes.sendMsg}>
+                                        <Typography>
+                                            {msg.content}
+                                        </Typography>
+                                        <Typography className={classes.time}>
+                                            {msg.time}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            ))
+                        }
+                    </div>
+                    <div className={classes.type}>
+                        <TextField
+                            id="outlined-basic"
+                            className={classes.textField}
+                            label="Message"
+                            margin="normal"
+                            variant="outlined"
+                        />
+                        <Fab color="primary" className={classes.button}>
+                            <Send />
+                        </Fab>
+                    </div>
+                </div>
+                <div className={classes.statistic}>
+                    Count message: 100
+                </div>
             </div>
        </React.Fragment>
     );

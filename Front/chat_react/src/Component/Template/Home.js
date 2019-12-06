@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 
 const cards = [1, 2, 3];
 
-export default function Home() {
+export default function Home(props) {
   const classes = useStyles();
   const [searchValue, setSearchValue] = useState('');
 
@@ -64,7 +64,7 @@ export default function Home() {
   return (
     <React.Fragment>
       <CssBaseline />
-      <Header></Header>
+      <Header history={props.history}></Header>
       <main>
         {/* Hero unit */}
         <div className={classes.heroContent}>

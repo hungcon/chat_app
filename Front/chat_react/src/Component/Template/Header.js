@@ -1,15 +1,17 @@
 import React , { useState } from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import IconButton from '@material-ui/core/IconButton';
+import { AppBar,
+  IconButton,
+  Toolbar,
+  Typography,
+  Menu,
+  MenuItem,
+  Avatar,
+  ListItemIcon
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import Notifications from '@material-ui/icons/Notifications';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Avatar from "@material-ui/core/Avatar";
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -48,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function Home() {
+export default function Header(props) {
   const classes = useStyles();
   const [menuState, setMenuState] = useState({anchorEl: null});
   const [notiState, setNotiState] = useState({anchorEl: null});
@@ -69,6 +71,10 @@ export default function Home() {
     setNotiState({anchorEl: null});
   };
 
+  const signOut = () => {
+    localStorage.removeItem('userName');
+    props.history.push('/');
+  }
 
   return (
       <AppBar position="relative" className = {classes.appBar}>
@@ -108,7 +114,7 @@ export default function Home() {
             </IconButton>
             <Menu anchorEl={menuState.anchorEl} open={Boolean(menuState.anchorEl)} onClose={closeMenu}>
                 <MenuItem  >Profiles</MenuItem>
-                <MenuItem  >Sign out</MenuItem>
+                <MenuItem  onClick={signOut}>Sign out</MenuItem>
             </Menu>  
             
           </React.Fragment>
