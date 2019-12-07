@@ -7,13 +7,11 @@ var UserInforSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    unique: true,
     required: true,
     trim: true
   },
   phoneNumber: {
       type: String,
-      unique: true,
   },
   firstName: {
     type: String

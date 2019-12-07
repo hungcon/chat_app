@@ -9,6 +9,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Grid from '@material-ui/core/Grid';
 import useForm from "react-hook-form";
+import Snackbar from '@material-ui/core/Snackbar';
 import axios from "axios";
 
 const useStyles = makeStyles((theme) =>
@@ -61,10 +62,12 @@ export default function ConfigInformation(props) {
     const classes = useStyles();
     const { handleSubmit, register, errors } = useForm();
     const [userInfor , setUserInfor] = useState({firstName:'', lastName: '', phoneNumber: '', email: ''})
-    const [avatarFile, setAvatarFile] = useState(null);
+    //const [avatarFile, setAvatarFile] = useState(null);
+    const [snackbar, setSnackbar] = useState({});
     const fileInput = useRef(null);
     const [activeStep, setActiveStep] = useState(0);
     const steps = getSteps();
+    
 
     const onSubmit = values => {
         setUserInfor(values);
@@ -73,7 +76,7 @@ export default function ConfigInformation(props) {
     
     const getAvatarFile = (event) => {
         event.preventDefault();
-        setAvatarFile(fileInput.current.files[0]);
+        // setAvatarFile(fileInput.current.files[0]);
         handleNext();
     }
 
@@ -85,15 +88,35 @@ export default function ConfigInformation(props) {
         setActiveStep(prevActiveStep => prevActiveStep - 1);
     };
 
+    const closeSnackbar = () => {
+        setSnackbar({
+          message: '',
+          open: false
+        })
+    };
+
     const finish = () => {
         userInfor.userName = localStorage.getItem('userName');
-        
         axios.post('http://localhost:4000/create_user_information',userInfor)
         .then(result => {
-            console.log(result);
+            //Lấy thông điệp trả về
+            let message = result.data.message;
+            if (result.status === 201){
+                if(result.data.message === "OK"){
+                    props.history.push('/home');
+                } else {
+                    setSnackbar({
+                    message,
+                    open: true
+                    });
+                }
+            }
         })
         .catch(err => {
-            console.log(err)
+            setSnackbar({
+                mesage: 'System error.',
+                open: true
+            });
         });
     }
     
@@ -246,6 +269,13 @@ export default function ConfigInformation(props) {
                     }
                 </Container>
             </React.Fragment>
+            <Snackbar
+                autoHideDuration={2000}
+                message={snackbar.message}
+                open={snackbar.open}
+                onClose={closeSnackbar}
+            />
         </div>
+        
     );
 }

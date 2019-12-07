@@ -100,6 +100,7 @@ router.post('/create_account', function(req, res, next){
           if(err){
             res.status(401).send({message: 'Internal server error.'});
           }else{
+            Account.update({userName: req.body.userName}, { $set: { checkConfiguration: 1}}).exec();
             res.status(201).send({message: 'OK'});
           }
         });

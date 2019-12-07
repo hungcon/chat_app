@@ -54,11 +54,10 @@ export default function SignUp(props) {
     .then(result => {
       //Lấy thông điệp trả về
       let message = result.data.message;
-      console.log(result.data)
       if (result.status === 201){
         if(result.data.message === "OK"){
           localStorage.setItem('userName', values.username);
-          props.history.push('/config-information')
+          props.history.push('/config-information');
         } else {
           setSnackbar({
             message,

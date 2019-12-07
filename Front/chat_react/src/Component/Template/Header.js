@@ -9,7 +9,10 @@ import { AppBar,
   ListItemIcon
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import Notifications from '@material-ui/icons/Notifications';
+import Button from '@material-ui/core/Button';
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
+import MessageIcon from '@material-ui/icons/Message';
+import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 
 
@@ -80,42 +83,67 @@ export default function Header(props) {
       <AppBar position="relative" className = {classes.appBar}>
         <Toolbar>
           <Typography className={classes.typo}></Typography>
+          {/* Avatar */}
           <React.Fragment>
             <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
           </React.Fragment>
+          {/* End Avatar */}
+         
           <React.Fragment>
+             {/* Friend Request */}
             < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={openNoti}>
-              <Notifications />
+              <Badge badgeContent={3} color="secondary">
+                <PeopleOutlineIcon />
+              </Badge>
             </IconButton>
             <Menu anchorEl={notiState.anchorEl} open={Boolean(notiState.anchorEl)} onClose={closeNoti}>
               <MenuItem>
                 <ListItemIcon>
                   <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
                 </ListItemIcon>
-                <Typography variant="inherit">Friend Request</Typography>
+                <Button size="small" color="primary" variant="contained" style={{marginRight: '10px'}}>
+                  Accept
+                </Button>
+                <Button size="small" color="secondary" variant="contained">
+                  Delete
+                </Button>
               </MenuItem>
               <MenuItem>
                 <ListItemIcon>
                   <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
                 </ListItemIcon>
-                <Typography variant="inherit">A very long text that overflows</Typography>
+                <Button size="small" color="primary" variant="contained" style={{marginRight: '10px'}}>
+                  Accept
+                </Button>
+                <Button size="small" color="secondary" variant="contained">
+                  Delete
+                </Button>
               </MenuItem>
               <MenuItem>
                 <ListItemIcon>
                   <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
                 </ListItemIcon>
-                <Typography variant="inherit" noWrap>
-                  A very long text that overflows
-                </Typography>
+                <Button size="small" color="primary" variant="contained" style={{marginRight: '10px'}}>
+                  Accept
+                </Button>
+                <Button size="small" color="secondary" variant="contained">
+                  Delete
+                </Button>
               </MenuItem>
             </Menu>
+             {/* End Friend Request */}
+            < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={() => props.history.push('/message-history')}>
+              <MessageIcon />
+            </IconButton>
+            {/* Function */}
             < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={openMenu}>
               <MenuIcon />
             </IconButton>
             <Menu anchorEl={menuState.anchorEl} open={Boolean(menuState.anchorEl)} onClose={closeMenu}>
-                <MenuItem  >Profiles</MenuItem>
+                <MenuItem  onClick={() => props.history.push('/personal-information')}>Profiles</MenuItem>
                 <MenuItem  onClick={signOut}>Sign out</MenuItem>
             </Menu>  
+            {/*End  Function */}
             
           </React.Fragment>
         </Toolbar>
