@@ -12,6 +12,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import MessageIcon from '@material-ui/icons/Message';
+import HomeIcon from '@material-ui/icons/Home';
 import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -20,6 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles(theme => ({
   appBar: {
     zIndex: theme.zIndex.drawer +1,
+    display: 'flex'
   },
   typo: {
     flexGrow: 1,
@@ -82,6 +84,9 @@ export default function Header(props) {
   return (
       <AppBar position="relative" className = {classes.appBar}>
         <Toolbar>
+          < IconButton edge="start"  color="inherit" aria-label="menu" onClick={() => props.history.push('/home')}>
+            <HomeIcon />
+          </IconButton>
           <Typography className={classes.typo}></Typography>
           {/* Avatar */}
           <React.Fragment>
