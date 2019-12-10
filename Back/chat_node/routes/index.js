@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Account = require('../model/account');
 var UserInfor = require('../model/userInfor');
+var Friends = require('../model/friends');
 const multer = require('multer');
 var md5 = require('md5');
 
@@ -85,39 +86,52 @@ router.post('/create_account', function(req, res, next){
  });
 
  router.post('/create_user_information', function(req, res){
-    Account.findOne({userName: req.body.userName}, function(err, doc){
-      if( err ){
-        res.status(401).send({message: 'Internal server error.'})
-      } else {
-        var userInfor = {
-          accounts: doc._id,
-          email: req.body.email,
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          phoneNumber: req.body.phoneNumber
-        };
-        UserInfor.create(userInfor, function(err, success){
-          if(err){
-            res.status(401).send({message: 'Internal server error.'});
-          }else{
-            Account.update({userName: req.body.userName}, { $set: { checkConfiguration: 1}}).exec();
-            res.status(201).send({message: 'OK'});
-          }
-        });
-      }
-    })
-            // UserInfor.findOne({email: 'hungcon.5070@gmail.com'})
-            // .populate('accounts')
-            // .exec(function(err, doc){
-            //   if(err){
-            //     console.log(err)
-            //   }
-            //   res.send(doc);
-            // })
-            
+  var userInfor = {
+    userName: req.body.userName,
+    email: req.body.email,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phoneNumber: req.body.phoneNumber
+  };
+  UserInfor.create(userInfor, function(err){
+    if(err){
+      res.status(401).send({message: 'Internal server error.'});
+    }else{
+      Account.update({userName: req.body.userName}, { $set: { checkConfiguration: 1}}).exec();
+      res.status(201).send({message: 'OK'});
+    }
+  });          
  });
 
+router.post('/request_friend', function(req, res){
+  var requestDocument = {
+    requester: req.body.requesterId,
+    recipient: req.body.recipientId,
+    status: 0
+  };
+  var receiveDocument = {
+    requester: req.body.recipientId,
+    recipient: req.body.requesterId,
+    status: 1
+  }
+  Friends.insertMany([requestDocument, receiveDocument], function(err){
+    if (err){
+      res.status(401).send({message: 'Internal server error.'});
+    } else {
+      res.status(201).send({message: 'OK'});
+    }
+  })
+});
 
+router.post('/get_all_friend_request', function(req, res){
+  Friends.find({requester: '5dea56908fa32537a84fee31'}).populate('recipient').exec(function(err, doc){
+    if( err){
+      res.status(401).send({message: 'Internal server error.'});
+    } else {
+      res.status(201).send(doc);
+    }
+  })
+});
  
 
 module.exports = router;

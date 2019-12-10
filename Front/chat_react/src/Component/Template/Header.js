@@ -1,4 +1,5 @@
-import React , { useState } from 'react';
+import React , { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import { AppBar,
   IconButton,
   Toolbar,
@@ -8,20 +9,22 @@ import { AppBar,
   Avatar,
   ListItemIcon
 } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from '@material-ui/icons/MenuOutlined';
 import Button from '@material-ui/core/Button';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
-import MessageIcon from '@material-ui/icons/Message';
-import HomeIcon from '@material-ui/icons/Home';
+import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline';
+import HomeIcon from '@material-ui/icons/HomeOutlined';
 import Badge from '@material-ui/core/Badge';
-import { makeStyles } from '@material-ui/core/styles';
-
-
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
     zIndex: theme.zIndex.drawer +1,
-    display: 'flex'
+    background: 'linear-gradient(to right, #e65c00, #f9d423)',
+  },
+  title: {
+    fontFamily: 'Bungee Shade, cursive',
+    fontSize: '20px',
   },
   typo: {
     flexGrow: 1,
@@ -57,6 +60,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header(props) {
   const classes = useStyles();
+  const [listRequest, setListRequest] = useState([]);
   const [menuState, setMenuState] = useState({anchorEl: null});
   const [notiState, setNotiState] = useState({anchorEl: null});
 
@@ -81,12 +85,25 @@ export default function Header(props) {
     props.history.push('/');
   }
 
+  useEffect(() => {
+    axios.post('http://localhost:4000/get_all_friend_request')
+    .then(result => {
+      setListRequest(result.data);
+      console.log(listRequest);
+      console.log(result.data)
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }, []);
+
   return (
       <AppBar position="relative" className = {classes.appBar}>
         <Toolbar>
           < IconButton edge="start"  color="inherit" aria-label="menu" onClick={() => props.history.push('/home')}>
             <HomeIcon />
           </IconButton>
+          <Typography className={classes.title}>CHAT APP</Typography>
           <Typography className={classes.typo}></Typography>
           {/* Avatar */}
           <React.Fragment>
@@ -97,48 +114,29 @@ export default function Header(props) {
           <React.Fragment>
              {/* Friend Request */}
             < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={openNoti}>
-              <Badge badgeContent={3} color="secondary">
+              <Badge badgeContent={listRequest.length} color="secondary">
                 <PeopleOutlineIcon />
               </Badge>
             </IconButton>
             <Menu anchorEl={notiState.anchorEl} open={Boolean(notiState.anchorEl)} onClose={closeNoti}>
-              <MenuItem>
-                <ListItemIcon>
-                  <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
-                </ListItemIcon>
-                <Button size="small" color="primary" variant="contained" style={{marginRight: '10px'}}>
-                  Accept
-                </Button>
-                <Button size="small" color="secondary" variant="contained">
-                  Delete
-                </Button>
-              </MenuItem>
-              <MenuItem>
-                <ListItemIcon>
-                  <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
-                </ListItemIcon>
-                <Button size="small" color="primary" variant="contained" style={{marginRight: '10px'}}>
-                  Accept
-                </Button>
-                <Button size="small" color="secondary" variant="contained">
-                  Delete
-                </Button>
-              </MenuItem>
-              <MenuItem>
-                <ListItemIcon>
-                  <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
-                </ListItemIcon>
-                <Button size="small" color="primary" variant="contained" style={{marginRight: '10px'}}>
-                  Accept
-                </Button>
-                <Button size="small" color="secondary" variant="contained">
-                  Delete
-                </Button>
-              </MenuItem>
+              {listRequest.map(request => (
+                <MenuItem key={request._id}>
+                  <ListItemIcon>
+                    <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
+                  </ListItemIcon>
+                  <Typography>{request.recipient.firstName + request.recipient.lastName}</Typography>
+                  <Button size="small" color="primary" variant="contained" style={{marginRight: '10px'}}>
+                    Accept
+                  </Button>
+                  <Button size="small" color="secondary" variant="contained">
+                    Delete
+                  </Button>
+                </MenuItem>
+              ))}
             </Menu>
              {/* End Friend Request */}
             < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={() => props.history.push('/message-history')}>
-              <MessageIcon />
+              <ChatBubbleOutlineIcon />
             </IconButton>
             {/* Function */}
             < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={openMenu}>

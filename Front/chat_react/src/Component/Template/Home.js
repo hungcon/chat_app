@@ -14,6 +14,7 @@ import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import Header from './Header';
+import axios from 'axios';
 
 
 const useStyles = makeStyles(theme => ({
@@ -59,6 +60,20 @@ export default function Home(props) {
 
   const getSearchValue = () => {
     console.log(searchValue)
+  }
+
+  const requestFriend = () => {
+    var data = {
+      requesterId: '5dea56908fa32537a84fee31',
+      recipientId: '5dea581d8fa32537a84fee35'
+    }
+    axios.post('http://localhost:4000/request_friend', data )
+    .then(result => {
+      console.log(result)
+    })
+    .catch( err => {
+      console.log(err)
+    })
   }
 
   return (
@@ -109,7 +124,7 @@ export default function Home(props) {
                     </Typography>
                   </CardContent>
                   <CardActions >
-                    <Button size="small" color="primary" variant="contained">
+                    <Button size="small" color="primary" variant="contained" onClick = {requestFriend}>
                       Send Message
                     </Button>
                     <Button size="small" color="secondary" variant="contained">

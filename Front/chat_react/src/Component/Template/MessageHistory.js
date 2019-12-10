@@ -14,7 +14,7 @@ import {
 } from '@material-ui/core';
 import Fab from '@material-ui/core/Fab';
 import Send from '@material-ui/icons/SendSharp';
-const drawerWidth = 240;
+const drawerWidth = 220;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -31,13 +31,12 @@ const useStyles = makeStyles(theme => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
+        padding: theme.spacing(2),
         maxWidth: '65%',
         maxHeight: '90%'
     },
     listMessage: {
-        // width: '87%',
-        maxHeight: '500px',
+        maxHeight: '50%',
         overflowY: 'scroll',
         overflowX: 'hidden',
     },
@@ -45,11 +44,15 @@ const useStyles = makeStyles(theme => ({
     receivedMsg: {
         borderRadius: '3px',
         backgroundColor: '#ebebeb',
+        padding: '8px',
+        marginRight: theme.spacing(2),
+        marginLeft: theme.spacing(2)
     },
     sendMsg: {
         borderRadius: '3px',
         backgroundColor: '#05728f',
-
+        padding: '8px',
+        marginRight: theme.spacing(4),
     },
     time: {
         fontSize: '13px',
@@ -57,7 +60,6 @@ const useStyles = makeStyles(theme => ({
     type: {
         display: 'flex',
         padding: theme.spacing(3),
-
     },
     button: {
       margin: 'auto',
@@ -216,9 +218,9 @@ export default function MessageHistory(props) {
                 <div className={classes.content}>
                     <div className={classes.listMessage} >
                         { receiveds.map( msg => (
-                                <Grid container spacing={2} key={msg._id} justify={msg.sender === 'Hưng' ? 'flex-end' : 'flex-start'}>
+                                <Grid container  key={msg._id} justify={msg.sender === 'Hưng' ? 'flex-end' : 'flex-start'}>
                                     {
-                                        msg.sender === 'Hưng' ? 
+                                        msg.sender === 'Hưng' ?     
                                         <Grid item></Grid> 
                                         :
                                         <Grid item>
