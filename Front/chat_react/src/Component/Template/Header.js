@@ -1,20 +1,22 @@
-import React , { useState, useEffect } from 'react';
+import React , { useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar,
+import { 
+  AppBar,
+  Button,
+  Badge,
   IconButton,
   Toolbar,
   Typography,
   Menu,
   MenuItem,
   Avatar,
-  ListItemIcon
+  ListItemIcon,
 } from '@material-ui/core';
+
 import MenuIcon from '@material-ui/icons/MenuOutlined';
-import Button from '@material-ui/core/Button';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
-import Badge from '@material-ui/core/Badge';
 import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
@@ -35,6 +37,9 @@ const useStyles = makeStyles(theme => ({
   },
   text: {
     fontFamily: 'Courgette, cursive'
+  },
+  name: {
+    width: '50%',
   },
   heroContent: {
     backgroundColor: theme.palette.background.paper,
@@ -61,8 +66,10 @@ const useStyles = makeStyles(theme => ({
 export default function Header(props) {
   const classes = useStyles();
   const [listRequest, setListRequest] = useState([]);
+  const [invisible, setInvisible] = useState(false);
   const [menuState, setMenuState] = useState({anchorEl: null});
   const [notiState, setNotiState] = useState({anchorEl: null});
+  const [status, setStatus] = useState(false);
 
   const openMenu = (event) => {
     setMenuState({anchorEl: event.currentTarget});
@@ -73,6 +80,7 @@ export default function Header(props) {
   };
 
   const openNoti = (event) => {
+    setInvisible(true);
     setNotiState({anchorEl: event.currentTarget});
   };
 
@@ -82,20 +90,72 @@ export default function Header(props) {
 
   const signOut = () => {
     localStorage.removeItem('userName');
+    localStorage.removeItem('idUserInfor');
     props.history.push('/');
   }
 
-  useEffect(() => {
-    axios.post('http://localhost:4000/get_all_friend_request')
+  async function fetchData() {
+    var data = {
+      idRequester: localStorage.getItem('idUserInfor')
+    }
+    axios.post('http://localhost:4000/get_all_friend_request', data)
     .then(result => {
       setListRequest(result.data);
-      console.log(listRequest);
-      console.log(result.data)
     })
     .catch(err => {
       console.log(err);
     })
-  }, []);
+  }
+
+  const showAllFriendRequest = () => {
+    if (listRequest.length === 0) {
+      return (
+        <MenuItem>Have no request</MenuItem>
+      );
+    } else {
+      return (
+      listRequest.map(request => (
+          <MenuItem key={request._id}>
+            <ListItemIcon>
+              <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
+            </ListItemIcon>
+            <Typography className={classes.name}>{request.recipient.firstName + " " + request.recipient.lastName}</Typography>
+            {
+              request.requester === localStorage.getItem('idUserInfor') ?
+                <Button size="small" color="secondary" variant="outlined" onClick={cancleRequest} value={request.recipient._id}>
+                  Cancle
+                </Button>
+              :<div>
+                <Button size="small" color="primary" variant="outlined" style={{marginRight: '10px'}}>
+                  Accept
+                </Button>
+                <Button size="small" color="secondary" variant="outlined">
+                  Delete
+                </Button>
+              </div>
+            }
+        </MenuItem>
+        ))
+      )
+    } 
+  }
+
+  const cancleRequest = (e) => {
+    console.log(e.currentTarget.value);
+    var data = {idCancle: e.currentTarget.value};
+    axios.post('http://localhost:4000/cancle_request', data)
+    .then(reuslt => {
+      console.log(reuslt);
+      setStatus(true);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [status]);
 
   return (
       <AppBar position="relative" className = {classes.appBar}>
@@ -114,25 +174,12 @@ export default function Header(props) {
           <React.Fragment>
              {/* Friend Request */}
             < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={openNoti}>
-              <Badge badgeContent={listRequest.length} color="secondary">
+              <Badge badgeContent={listRequest.length} color="secondary" invisible={listRequest.length === 0 ? true : invisible}>
                 <PeopleOutlineIcon />
               </Badge>
             </IconButton>
             <Menu anchorEl={notiState.anchorEl} open={Boolean(notiState.anchorEl)} onClose={closeNoti}>
-              {listRequest.map(request => (
-                <MenuItem key={request._id}>
-                  <ListItemIcon>
-                    <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
-                  </ListItemIcon>
-                  <Typography>{request.recipient.firstName + request.recipient.lastName}</Typography>
-                  <Button size="small" color="primary" variant="contained" style={{marginRight: '10px'}}>
-                    Accept
-                  </Button>
-                  <Button size="small" color="secondary" variant="contained">
-                    Delete
-                  </Button>
-                </MenuItem>
-              ))}
+              {showAllFriendRequest()}
             </Menu>
              {/* End Friend Request */}
             < IconButton edge="start" className={classes.icon} color="inherit" aria-label="menu" onClick={() => props.history.push('/message-history')}>

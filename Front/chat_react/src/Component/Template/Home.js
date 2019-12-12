@@ -64,8 +64,8 @@ export default function Home(props) {
 
   const requestFriend = () => {
     var data = {
-      requesterId: '5dea56908fa32537a84fee31',
-      recipientId: '5dea581d8fa32537a84fee35'
+      requesterId: '5dee0f7b5ddb4c224ca3b593',
+      recipientId: '5df1a5c0f1dce91bb8ca0309'
     }
     axios.post('http://localhost:4000/request_friend', data )
     .then(result => {

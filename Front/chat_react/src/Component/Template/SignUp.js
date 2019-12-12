@@ -56,7 +56,7 @@ export default function SignUp(props) {
       let message = result.data.message;
       if (result.status === 201){
         if(result.data.message === "OK"){
-          localStorage.setItem('userName', values.username);
+          localStorage.setItem('userName', values.userName);
           props.history.push('/config-information');
         } else {
           setSnackbar({

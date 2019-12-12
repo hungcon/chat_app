@@ -55,7 +55,8 @@ export default function SignIn(props) {
       let message = result.data.message;
       if (result.status === 201){
         if(result.data.message === "OK"){
-          localStorage.setItem('userName', values.username);
+          localStorage.setItem('userName', values.userName);
+          localStorage.setItem('idUserInfor', result.data.idUserInfor);
           if (result.data.checkConfiguration === 0) {
              props.history.push('/config-information');
           }else {
@@ -102,13 +103,13 @@ export default function SignIn(props) {
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            name="username"
+            name="userName"
             variant="outlined"
             margin="normal"
             fullWidth
-            error={!!(errors && errors.username)}
-            helperText={(errors && errors.username) ? errors.username.message : ''}
-            id="username"
+            error={!!(errors && errors.userName)}
+            helperText={(errors && errors.userName) ? errors.userName.message : ''}
+            id="userName"
             label="Username"
             autoFocus
             inputRef={register({

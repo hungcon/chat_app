@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/sign-in', function(req, res) {
-  Account.findOne({userName: req.body.username}, function(err, doc){
+  Account.findOne({userName: req.body.userName}, function(err, doc){
     if (err) {
       res.status(401).send({message: 'Internal server error.'});
     } else {
@@ -46,7 +46,14 @@ router.post('/sign-in', function(req, res) {
         res.status(201).send({message: 'Account is not exists.'})
       } else {
         if (doc.password == md5(req.body.password)){
-          res.status(201).send({message: 'OK', checkConfiguration: doc.checkConfiguration});
+          // Lấy về id của userInfor
+          UserInfor.findOne({userName: req.body.userName}, function(err, doc){
+            if (err) {
+              res.status(401).send({message: 'Internal server error.'});
+            } else {
+              res.status(201).send({message: 'OK', checkConfiguration: doc.checkConfiguration, idUserInfor: doc._id});
+            }
+          });
         } else {
           res.status(201).send({message: 'Password is not correct.'})
         }
@@ -93,12 +100,12 @@ router.post('/create_account', function(req, res, next){
     lastName: req.body.lastName,
     phoneNumber: req.body.phoneNumber
   };
-  UserInfor.create(userInfor, function(err){
+  UserInfor.create(userInfor, function(err, doc){
     if(err){
       res.status(401).send({message: 'Internal server error.'});
     }else{
       Account.update({userName: req.body.userName}, { $set: { checkConfiguration: 1}}).exec();
-      res.status(201).send({message: 'OK'});
+      res.status(201).send({message: 'OK', id: doc._id});
     }
   });          
  });
@@ -124,11 +131,21 @@ router.post('/request_friend', function(req, res){
 });
 
 router.post('/get_all_friend_request', function(req, res){
-  Friends.find({requester: '5dea56908fa32537a84fee31'}).populate('recipient').exec(function(err, doc){
+  Friends.find({requester: req.body.idRequester}).populate('recipient').exec(function(err, doc){
     if( err){
       res.status(401).send({message: 'Internal server error.'});
     } else {
       res.status(201).send(doc);
+    }
+  })
+});
+
+router.post('/cancle_request', function(req, res){
+  Friends.findOneAndDelete({recipient: req.body.idCancle}, function(err, doc){
+    if (err) {
+      res.status(401).send({message: 'Internal server error.'});
+    } else {
+      res.status(201).send({message: 'OK'});
     }
   })
 });
