@@ -1,4 +1,4 @@
-import React , { useState } from 'react';
+import React , { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Card from '@material-ui/core/Card';
@@ -13,6 +13,10 @@ import Container from '@material-ui/core/Container';
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import Header from './Header';
 import axios from 'axios';
 
@@ -48,19 +52,54 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const cards = [1, 2, 3];
 
 export default function Home(props) {
   const classes = useStyles();
   const [searchValue, setSearchValue] = useState('');
+  const [listFriend, setListFriend] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const handleChange = (event) => {
     setSearchValue(event.target.value);
-  }
+  };
 
   const getSearchValue = () => {
-    console.log(searchValue)
-  }
+    if(searchValue === ""){
+      setSearching(false);
+    } else {
+      let data = {
+        searchValue: searchValue,
+        userName: localStorage.getItem('userName')
+      }
+      axios.post('http://localhost:4000/find_friend', data)
+      .then(result => {
+        setSearchResult(result.data);
+        setSearching(true);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  async function fetchData() {
+    var data = {
+      userId: localStorage.getItem('idUserInfor')
+    }
+    axios.post('http://localhost:4000/get_all_friend', data)
+    .then(result => {
+      setListFriend(result.data);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  };
 
   const requestFriend = () => {
     var data = {
@@ -69,17 +108,22 @@ export default function Home(props) {
     }
     axios.post('http://localhost:4000/request_friend', data )
     .then(result => {
-      console.log(result)
+      console.log(result);
+      setOpen(true);
     })
     .catch( err => {
       console.log(err)
     })
-  }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <React.Fragment>
       <CssBaseline />
-      <Header history={props.history}></Header>
+      <Header history={props.history} ></Header>
       <main>
         {/* Hero unit */}
         <div className={classes.heroContent}>
@@ -88,7 +132,7 @@ export default function Home(props) {
              Welcome to chat app
             </Typography>
             <Typography variant="h5" align="center" color="textSecondary" paragraph className={classes.text}>         
-                Your friends list is shown below. You can search more another friend by searching by email in search box.
+                Your friends list is shown below. You can search more another friend by searching by name in search box.
             </Typography>
             <TextField
               label="Search Friend"
@@ -107,24 +151,25 @@ export default function Home(props) {
             />
           </Container>
         </div>
+        {!searching &&
         <Container className={classes.cardGrid} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {cards.map(card => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
+            {listFriend.map(friend => (
+              <Grid item key={friend._id} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
                     image="https://source.unsplash.com/random"
-                    title="Image title"
+                    title={friend.lastName}
                   />
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
-                      Friend Name
+                      {friend.firstName + " " + friend.lastName}
                     </Typography>
                   </CardContent>
                   <CardActions >
-                    <Button size="small" color="primary" variant="contained" onClick = {requestFriend}>
+                    <Button size="small" color="primary" variant="contained" onClick = {() => props.history.push('message-history')}>
                       Send Message
                     </Button>
                     <Button size="small" color="secondary" variant="contained">
@@ -136,7 +181,59 @@ export default function Home(props) {
             ))}
           </Grid>
         </Container>
+        }
+        {searching &&
+        <Container className={classes.cardGrid} maxWidth="md">
+          {searchResult.length === 0 ? 
+          <Typography component="h3" variant="h4" align="center" color="red" gutterBottom className={classes.text} >
+            Not found
+          </Typography>
+          :
+          <Grid container spacing={4}>
+            {searchResult.map(friend => (
+              <Grid item key={friend._id} xs={12} sm={6} md={4}>
+                <Card className={classes.card}>
+                  <CardMedia
+                    className={classes.cardMedia}
+                    image="https://source.unsplash.com/random"
+                    title={friend.lastName}
+                  />
+                  <CardContent className={classes.cardContent}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {friend.firstName + " " + friend.lastName}
+                    </Typography>
+                  </CardContent>
+                  <CardActions >
+                    <Button size="small" color="primary" variant="contained" onClick = {() => props.history.push('message-history')}>
+                      Add Friend
+                    </Button>
+                    <Button size="small" color="secondary" variant="contained">
+                      Unfriend
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          }
+        </Container>
+        }
       </main>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+      >
+        <DialogContent>
+          <DialogContentText id="context">
+            Your friend request have been sent
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions style={{margin: 'auto'}}>
+          <Button onClick={handleClose} color="primary" variant="outlined">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 }

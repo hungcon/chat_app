@@ -92,6 +92,22 @@ router.post('/create_account', function(req, res, next){
   });
  });
 
+ router.post('/get_all_friend', function(req, res){
+  UserInfor.findById(req.body.userId, function(err, doc){
+    if(err){
+      res.status(401).send({message: 'Internal server error.'});
+    }else{
+      UserInfor.find({'_id': {$in : doc.friends}}, function(err, doc){
+        if (err) {
+          res.status(401).send({message: 'Internal server error.'});
+        } else {
+          res.status(201).send(doc);
+        }
+      })
+    }
+  })
+});
+
  router.post('/create_user_information', function(req, res){
   var userInfor = {
     userName: req.body.userName,
@@ -146,6 +162,37 @@ router.post('/cancle_request', function(req, res){
       res.status(401).send({message: 'Internal server error.'});
     } else {
       res.status(201).send({message: 'OK'});
+    }
+  })
+});
+
+router.post('/find_friend', function(req, res){
+  //Lấy ds bạn bè
+  UserInfor.findOne({userName: req.body.userName}, function(err, doc){
+    if(err){
+      res.status(401).send({message: 'Internal server error.'});
+    } else {
+      var conditions = {};
+      if( doc === null) {
+        conditions = {
+          $text: {$search: req.body.searchValue},
+          userName: {$ne: req.body.userName},
+        }
+      } else {
+        conditions = {
+          $text: {$search: req.body.searchValue},
+          userName: {$ne: req.body.userName},
+          _id: {$nin: doc.friends}
+        }
+      }
+    
+      UserInfor.find(conditions, function(err, doc){
+        if (err) {
+          res.status(401).send({message: 'Internal server error.'});
+        } else {
+          res.status(201).send(doc);
+        }
+      })
     }
   })
 });

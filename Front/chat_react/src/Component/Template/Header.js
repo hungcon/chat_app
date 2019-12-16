@@ -141,11 +141,9 @@ export default function Header(props) {
   }
 
   const cancleRequest = (e) => {
-    console.log(e.currentTarget.value);
     var data = {idCancle: e.currentTarget.value};
     axios.post('http://localhost:4000/cancle_request', data)
     .then(reuslt => {
-      console.log(reuslt);
       setStatus(true);
     })
     .catch(err => {
