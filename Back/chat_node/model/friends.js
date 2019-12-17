@@ -15,8 +15,6 @@ var FriendSchema = new mongoose.Schema({
         enums: [
             0,    //'requested',
             1,    //'pending',
-            2,    //'accepted',
-            3,    //'rejected'
         ], 
         timestamp: true,
     }

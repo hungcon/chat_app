@@ -62,7 +62,6 @@ router.post('/sign-in', function(req, res) {
   });
 });
 
-
 router.post('/create_account', function(req, res, next){
   var account = {
     userName: req.body.userName,
@@ -108,6 +107,16 @@ router.post('/create_account', function(req, res, next){
   })
 });
 
+router.post('/get_all_friend_request', function(req, res){
+  Friends.find({requester: req.body.idRequester}).populate('recipient').exec(function(err, doc){
+    if( err){
+      res.status(401).send({message: 'Internal server error.'});
+    } else {
+      res.status(201).send(doc);
+    }
+  })
+});
+
  router.post('/create_user_information', function(req, res){
   var userInfor = {
     userName: req.body.userName,
@@ -146,24 +155,37 @@ router.post('/request_friend', function(req, res){
   })
 });
 
-router.post('/get_all_friend_request', function(req, res){
-  Friends.find({requester: req.body.idRequester}).populate('recipient').exec(function(err, doc){
-    if( err){
+router.post('/accept_friend', function(req, res){
+  Friends.deleteMany({requester: {$in: [req.body.userId, req.body.friendId]}}, function(err){
+    if (err) {
       res.status(401).send({message: 'Internal server error.'});
     } else {
-      res.status(201).send(doc);
+      UserInfor.findOneAndUpdate({_id: req.body.userId}, {$push: {friends: req.body.friendId}}).exec();
+      UserInfor.findOneAndUpdate({_id: req.body.friendId}, {$push: {friends: req.body.userId}}).exec();
+      res.status(201).send({message: 'OK'});
     }
-  })
+  });
+});
+
+router.post('/unfriend', function(req, res){
+  UserInfor.findOneAndUpdate({_id: req.body.userId}, {$pull: {friends: req.body.unfriendId}}, function(err){
+    if(err){
+      res.status(401).send({message: 'Internal server error.'});
+    } else {
+      UserInfor.findOneAndUpdate({_id: req.body.unfriendId}, {$pull: {friends: req.body.userId}}).exec();
+      res.status(201).send({message: 'OK'});
+    }
+  });
 });
 
 router.post('/cancle_request', function(req, res){
-  Friends.findOneAndDelete({recipient: req.body.idCancle}, function(err, doc){
+  Friends.deleteMany({requester: {$in: [req.body.idCancle, req.body.userId]}}, function(err){
     if (err) {
       res.status(401).send({message: 'Internal server error.'});
     } else {
       res.status(201).send({message: 'OK'});
     }
-  })
+  });
 });
 
 router.post('/find_friend', function(req, res){

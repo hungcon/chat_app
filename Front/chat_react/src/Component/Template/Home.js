@@ -56,6 +56,7 @@ const useStyles = makeStyles(theme => ({
 export default function Home(props) {
   const classes = useStyles();
   const [searchValue, setSearchValue] = useState('');
+  const [status, setStatus] = useState(false);
   const [listFriend, setListFriend] = useState([]);
   const [searching, setSearching] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
@@ -63,6 +64,18 @@ export default function Home(props) {
 
   const handleChange = (event) => {
     setSearchValue(event.target.value);
+  };
+
+  const handleKeyPress = (event) => {
+    const key = event.key;
+
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+
+    if (key === 'Enter') {
+      getSearchValue();
+    }
   };
 
   const getSearchValue = () => {
@@ -101,10 +114,14 @@ export default function Home(props) {
     })
   };
 
-  const requestFriend = () => {
+  useEffect(() => {
+    fetchData();
+  }, [status]);
+
+  const requestFriend = (e) => {
     var data = {
-      requesterId: '5dee0f7b5ddb4c224ca3b593',
-      recipientId: '5df1a5c0f1dce91bb8ca0309'
+      requesterId: localStorage.getItem('idUserInfor'),
+      recipientId: e.currentTarget.value
     }
     axios.post('http://localhost:4000/request_friend', data )
     .then(result => {
@@ -116,9 +133,19 @@ export default function Home(props) {
     })
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const unfriend = (e) => {
+    var data = {
+      userId: localStorage.getItem('idUserInfor'),
+      unfriendId: e.currentTarget.value
+    }
+    axios.post('http://localhost:4000/unfriend', data)
+    .then(result => {
+      setStatus(true)
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
 
   return (
     <React.Fragment>
@@ -128,10 +155,10 @@ export default function Home(props) {
         {/* Hero unit */}
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
-            <Typography component="h2" variant="h3" align="center" color="textPrimary" gutterBottom className={classes.text} >
+            <Typography component="h3" variant="h4" align="center" color="textPrimary" gutterBottom className={classes.text} >
              Welcome to chat app
             </Typography>
-            <Typography variant="h5" align="center" color="textSecondary" paragraph className={classes.text}>         
+            <Typography variant="h6" align="center" color="textSecondary" paragraph className={classes.text}>         
                 Your friends list is shown below. You can search more another friend by searching by name in search box.
             </Typography>
             <TextField
@@ -139,10 +166,11 @@ export default function Home(props) {
               fullWidth
               variant="outlined"
               onChange={handleChange}
+              onKeyPress={handleKeyPress}
               InputProps={{
                 endAdornment: (
                   <InputAdornment>
-                    <IconButton onClick={getSearchValue}>
+                    <IconButton onClick={getSearchValue} >
                       <SearchIcon />
                     </IconButton>
                   </InputAdornment>
@@ -169,10 +197,10 @@ export default function Home(props) {
                     </Typography>
                   </CardContent>
                   <CardActions >
-                    <Button size="small" color="primary" variant="contained" onClick = {() => props.history.push('message-history')}>
+                    <Button size="small" color="primary" variant="outlined" onClick={() => props.history.push('message-history')}>
                       Send Message
                     </Button>
-                    <Button size="small" color="secondary" variant="contained">
+                    <Button size="small" color="secondary" variant="outlined" onClick={unfriend} value={friend._id}>
                       Unfriend
                     </Button>
                   </CardActions>
@@ -185,30 +213,27 @@ export default function Home(props) {
         {searching &&
         <Container className={classes.cardGrid} maxWidth="md">
           {searchResult.length === 0 ? 
-          <Typography component="h3" variant="h4" align="center" color="red" gutterBottom className={classes.text} >
+          <Typography component="h5" variant="h6" align="center" color="textPrimary"  className={classes.text} >
             Not found
           </Typography>
           :
           <Grid container spacing={4}>
-            {searchResult.map(friend => (
-              <Grid item key={friend._id} xs={12} sm={6} md={4}>
+            {searchResult.map(user => (
+              <Grid item key={user._id} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
                     image="https://source.unsplash.com/random"
-                    title={friend.lastName}
+                    title={user.lastName}
                   />
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
-                      {friend.firstName + " " + friend.lastName}
+                      {user.firstName + " " + user.lastName}
                     </Typography>
                   </CardContent>
                   <CardActions >
-                    <Button size="small" color="primary" variant="contained" onClick = {() => props.history.push('message-history')}>
+                    <Button size="small" color="primary" variant="outlined" onClick = {requestFriend} value={user._id}>
                       Add Friend
-                    </Button>
-                    <Button size="small" color="secondary" variant="contained">
-                      Unfriend
                     </Button>
                   </CardActions>
                 </Card>

@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     fontFamily: 'Courgette, cursive'
   },
   name: {
-    width: '50%',
+    width: '65%',
   },
   heroContent: {
     backgroundColor: theme.palette.background.paper,
@@ -121,18 +121,19 @@ export default function Header(props) {
             </ListItemIcon>
             <Typography className={classes.name}>{request.recipient.firstName + " " + request.recipient.lastName}</Typography>
             {
-              request.requester === localStorage.getItem('idUserInfor') ?
+              request.status === 0 ?
                 <Button size="small" color="secondary" variant="outlined" onClick={cancleRequest} value={request.recipient._id}>
                   Cancle
                 </Button>
-              :<div>
-                <Button size="small" color="primary" variant="outlined" style={{marginRight: '10px'}}>
-                  Accept
-                </Button>
-                <Button size="small" color="secondary" variant="outlined">
-                  Delete
-                </Button>
-              </div>
+              :
+                <div>
+                  <Button size="small" color="primary" variant="outlined" style={{marginLeft: '10px', marginRight: '10px'}} onClick={acceptFriend} value={request.recipient._id}>
+                    Accept
+                  </Button>
+                  <Button size="small" color="secondary" variant="outlined" onClick={cancleRequest} value={request.recipient._id}>
+                    Delete
+                  </Button>
+                </div>
             }
         </MenuItem>
         ))
@@ -141,7 +142,10 @@ export default function Header(props) {
   }
 
   const cancleRequest = (e) => {
-    var data = {idCancle: e.currentTarget.value};
+    var data = {
+      idCancle: e.currentTarget.value,
+      userId: localStorage.getItem('idUserInfor')
+    };
     axios.post('http://localhost:4000/cancle_request', data)
     .then(reuslt => {
       setStatus(true);
@@ -149,7 +153,21 @@ export default function Header(props) {
     .catch(err => {
       console.log(err);
     })
-  }
+  };
+
+  const acceptFriend = (e) => {
+    var data = {
+      userId: localStorage.getItem('idUserInfor'),
+      friendId: e.currentTarget.value
+    };
+    axios.post('http://localhost:4000/accept_friend', data)
+    .then(result => {
+      console.log(result);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  };
 
   useEffect(() => {
     fetchData();
