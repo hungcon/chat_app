@@ -7,12 +7,17 @@ import CallIcon from '@material-ui/icons/Call';
 import FaceIcon from '@material-ui/icons/Face';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import { Typography, Button, TextField } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Snackbar from '@material-ui/core/Snackbar';
 import axios from 'axios';
 import useForm from "react-hook-form";
 
 const useStyles = makeStyles(theme => ({
    img: {
-        borderRadius: '50%',
+        
         marginTop: theme.spacing(3),
         maxWidth: '100%',
         height: 'auto'
@@ -38,6 +43,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function PersonalInformation(props) {
     const classes = useStyles();
+    const [open, setOpen] = useState(false);
+    const [snackbar, setSnackbar] = useState({});
     const [userInfor, setUserInfor] = useState({phoneNumber: '', firstName: '', lastName: '', email: ''});
     const { handleSubmit, register, errors } = useForm();
 
@@ -45,10 +52,22 @@ export default function PersonalInformation(props) {
         values.userName = localStorage.getItem('userName');
         axios.post('http://localhost:4000/update_user_information', values)
         .then(result =>{
-            console.log(result);
+            if (result.status === 201){
+                if(result.data.message === "OK"){
+                  setOpen(true);
+                }
+            } else {
+                setSnackbar({
+                    message: 'Internal server error',
+                    open: true
+                });
+            }
         })
         .catch(err => {
-            console.log(err)
+            setSnackbar({
+                message: 'Internal server error',
+                open: true
+            });
         })
     };
 
@@ -62,12 +81,33 @@ export default function PersonalInformation(props) {
         }
         axios.post('http://localhost:4000/get_user_infor', data)
         .then(result => {
-            setUserInfor(result.data)
+            if (result.status === 201){
+               setUserInfor(result.data);
+            } else {
+                setSnackbar({
+                    message: 'Internal server error',
+                    open: true
+                });
+            }
         })
         .catch(err => {
-            console.log(err);
+            setSnackbar({
+                message: 'Internal server error',
+                open: true
+            });
         })
     }, []);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const closeSnackbar = () => {
+        setSnackbar({
+            message: '',
+            open: false
+        })
+    }
 
     return (
        <React.Fragment>
@@ -183,6 +223,27 @@ export default function PersonalInformation(props) {
             </Grid>
             </form>
            </Container>
+           <Dialog
+                open={open}
+                onClose={handleClose}
+            >
+                <DialogContent>
+                <DialogContentText id="context">
+                    Update successfully
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions style={{margin: 'auto'}}>
+                <Button onClick={handleClose} color="primary" variant="outlined">
+                    OK
+                </Button>
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                autoHideDuration={2000}
+                message={snackbar.message}
+                open={snackbar.open}
+                onClose={closeSnackbar}
+            />
        </React.Fragment>
     );
 }

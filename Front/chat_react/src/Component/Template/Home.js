@@ -17,6 +17,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import Snackbar from '@material-ui/core/Snackbar';
 import Header from './Header';
 import axios from 'axios';
 
@@ -62,6 +63,8 @@ export default function Home(props) {
   const [searching, setSearching] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
   const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [snackbar, setSnackbar] = useState({});
 
   const handleChange = (event) => {
     setSearchValue(event.target.value);
@@ -89,11 +92,21 @@ export default function Home(props) {
       }
       axios.post('http://localhost:4000/find_friend', data)
       .then(result => {
-        setSearchResult(result.data);
-        setSearching(true);
+        if (result.status === 201){
+          setSearchResult(result.data);
+          setSearching(true);
+        } else {
+          setSnackbar({
+              message: 'Internal server error',
+              open: true
+          });
+        }
       })
       .catch(err => {
-        console.log(err);
+        setSnackbar({
+          message: 'Internal server error',
+          open: true
+        });
       })
     }
   };
@@ -102,13 +115,27 @@ export default function Home(props) {
     setOpen(false);
   };
 
+  const closeSnackbar = () => {
+    setSnackbar({
+        message: '',
+        open: false
+    })
+  }
+
   async function fetchData() {
     var data = {
       userId: localStorage.getItem('idUserInfor')
     }
     axios.post('http://localhost:4000/get_all_friend', data)
     .then(result => {
-      setListFriend(result.data);
+      if (result.status === 201){
+        setListFriend(result.data);
+      } else {
+        setSnackbar({
+            message: 'Internal server error',
+            open: true
+        });
+      }
     })
     .catch(err => {
       console.log(err);
@@ -126,11 +153,22 @@ export default function Home(props) {
     }
     axios.post('http://localhost:4000/request_friend', data )
     .then(result => {
-      console.log(result);
-      setOpen(true);
+      if (result.status === 201){
+        if(result.data.message === "OK"){
+          openNotify('Your friend request have been sent');
+        }
+      } else {
+        setSnackbar({
+            message: 'Internal server error',
+            open: true
+        });
+      }
     })
     .catch( err => {
-      console.log(err)
+      setSnackbar({
+        message: 'Internal server error',
+        open: true
+      });
     })
   };
 
@@ -141,11 +179,29 @@ export default function Home(props) {
     }
     axios.post('http://localhost:4000/unfriend', data)
     .then(result => {
-      setStatus(true)
+      if (result.status === 201){
+        if(result.data.message === "OK"){
+          setStatus(true);
+          openNotify('Unfriend successfully');
+        }
+      } else {
+        setSnackbar({
+            message: 'Internal server error',
+            open: true
+        });
+      }
     })
     .catch(err => {
-      console.log(err);
+      setSnackbar({
+        message: 'Internal server error',
+        open: true
+      });
     })
+  }
+
+  const openNotify = (message) => {
+    setOpen(true);
+    setMessage(message);
   }
 
   return (
@@ -251,7 +307,7 @@ export default function Home(props) {
       >
         <DialogContent>
           <DialogContentText id="context">
-            Your friend request have been sent
+            {message}
           </DialogContentText>
         </DialogContent>
         <DialogActions style={{margin: 'auto'}}>
@@ -260,6 +316,12 @@ export default function Home(props) {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+          autoHideDuration={2000}
+          message={snackbar.message}
+          open={snackbar.open}
+          onClose={closeSnackbar}
+      />
     </React.Fragment>
   );
 }

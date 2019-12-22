@@ -71,14 +71,14 @@ export default function SignIn(props) {
         }
       } else {
         setSnackbar({
-          mesage: 'Internal server error',
+          message: 'Internal server error',
           open: true
         });
       }
     })
     .catch(err => {
       setSnackbar({
-        mesage: 'System error.',
+        message: 'System error.',
         open: true
       });
     })
