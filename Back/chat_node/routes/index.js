@@ -91,6 +91,16 @@ router.post('/create_account', function(req, res, next){
   });
  });
 
+ router.post('/get_user_infor', function(req, res){
+  UserInfor.findById(req.body.userInforId, function(err, doc){
+    if(err){
+      res.status(401).send({message: 'Internal server error.'});
+    }else{
+      res.status(201).send(doc);
+    }
+  })
+});
+
  router.post('/get_all_friend', function(req, res){
   UserInfor.findById(req.body.userId, function(err, doc){
     if(err){
@@ -131,6 +141,22 @@ router.post('/get_all_friend_request', function(req, res){
     }else{
       Account.update({userName: req.body.userName}, { $set: { checkConfiguration: 1}}).exec();
       res.status(201).send({message: 'OK', id: doc._id});
+    }
+  });          
+ });
+
+ router.post('/update_user_information', function(req, res){
+  var userInfor = {
+    email: req.body.email,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phoneNumber: req.body.phoneNumber
+  };
+  UserInfor.findOneAndUpdate({userName: req.body.userName}, userInfor, function(err, doc){
+    if(err){
+      res.status(401).send({message: 'Internal server error.'});
+    }else{
+      res.status(201).send({message: 'OK'});
     }
   });          
  });

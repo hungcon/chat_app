@@ -48,6 +48,7 @@ const useStyles = makeStyles(theme => ({
     paddingTop: '56.25%', // 16:9
   },
   cardContent: {
+    margin:'auto',
     flexGrow: 1,
   },
 }));
@@ -192,11 +193,11 @@ export default function Home(props) {
                     title={friend.lastName}
                   />
                   <CardContent className={classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
+                    <Typography gutterBottom variant="h5" component="h2" className={classes.text}>
                       {friend.firstName + " " + friend.lastName}
                     </Typography>
                   </CardContent>
-                  <CardActions >
+                  <CardActions style={{margin:'auto'}}>
                     <Button size="small" color="primary" variant="outlined" onClick={() => props.history.push('message-history')}>
                       Send Message
                     </Button>

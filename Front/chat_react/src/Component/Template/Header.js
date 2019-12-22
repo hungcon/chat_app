@@ -1,4 +1,4 @@
-import React , { useState, useEffect, useRef } from 'react';
+import React , { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { 
   AppBar,
@@ -148,7 +148,7 @@ export default function Header(props) {
     };
     axios.post('http://localhost:4000/cancle_request', data)
     .then(reuslt => {
-      setStatus(true);
+      setStatus(!status);
     })
     .catch(err => {
       console.log(err);
@@ -162,7 +162,7 @@ export default function Header(props) {
     };
     axios.post('http://localhost:4000/accept_friend', data)
     .then(result => {
-      console.log(result);
+      setStatus(!status);
     })
     .catch(err => {
       console.log(err);
