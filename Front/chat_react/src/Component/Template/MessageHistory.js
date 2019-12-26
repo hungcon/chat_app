@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Header from './Header';
 import Drawer from '@material-ui/core/Drawer';
@@ -14,7 +14,8 @@ import {
 } from '@material-ui/core';
 import Fab from '@material-ui/core/Fab';
 import Send from '@material-ui/icons/SendSharp';
-const drawerWidth = 220;
+import Snackbar from '@material-ui/core/Snackbar';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -22,11 +23,11 @@ const useStyles = makeStyles(theme => ({
     },
    
     drawer: {
-        width: drawerWidth,
+        width: '280px',
         flexShrink: 0,
     },
     drawerPaper: {
-        width: drawerWidth,
+        width: '280px',
         backgroundColor: '#F5DEB3',
     },
     content: {
@@ -36,7 +37,7 @@ const useStyles = makeStyles(theme => ({
         maxHeight: '90%'
     },
     listMessage: {
-        maxHeight: '50%',
+        height: '500px',
         overflowY: 'scroll',
         overflowX: 'hidden',
     },
@@ -71,126 +72,79 @@ const useStyles = makeStyles(theme => ({
     statistic: {
         margin: theme.spacing(2),
         
+    }, 
+    chosen: {
+        backgroundColor: '#e9a5a7',
     }
 }));
 
-    const receiveds = [
-        {
-            _id: 1,
-            sender: 'Chung',
-            receiver: 'Hưng',
-            content: 'Hôm nay có đi học ko?',
-            time: '20-11-2019 10:15'
-        },
-        {
-            _id: 2,
-            sender: 'Hưng',
-            receiver: 'Chung',
-            content: 'Nay lạnh, nghỉ',
-            time: '20-11-2019 10:16'
-        },
-        {
-            _id: 3,
-            sender: 'Chung',
-            receiver: 'Hưng',
-            content: 'Chiều đi mua quần áo ko?',
-            time: '20-11-2019 10:17'
-        },
-        {
-            _id: 4,
-            sender: 'Hưng',
-            receiver: 'Chung',
-            content: 'Nay lạnh, nghỉ',
-            time: '20-11-2019 10:18'
-        },
-        {
-            _id: 5,
-            sender: 'Chung',
-            receiver: 'Hưng',
-            content: 'Tối có phải đi học ko?',
-            time: '20-11-2019 10:19'
-        },
-        {
-            _id: 6,
-            sender: 'Hưng',
-            receiver: 'Chung',
-            content: 'Nay lạnh, nghỉ',
-            time: '20-11-2019 10:20'
-        },
-        {
-            _id: 7,
-            sender: 'Chung',
-            receiver: 'Hưng',
-            content: 'Tối có phải đi học ko?',
-            time: '20-11-2019 10:19'
-        },
-        {
-            _id: 8,
-            sender: 'Hưng',
-            receiver: 'Chung',
-            content: 'Nay lạnh, nghỉ',
-            time: '20-11-2019 10:20'
-        },
-        {
-            _id: 9,
-            sender: 'Chung',
-            receiver: 'Hưng',
-            content: 'Tối có phải đi học ko?',
-            time: '20-11-2019 10:19'
-        },
-        {
-            _id: 10,
-            sender: 'Hưng',
-            receiver: 'Chung',
-            content: 'Nay lạnh, nghỉ',
-            time: '20-11-2019 10:20'
-        },
-        {
-            _id: 11,
-            sender: 'Chung',
-            receiver: 'Hưng',
-            content: 'Tối có phải đi học ko?',
-            time: '20-11-2019 10:19'
-        },
-        {
-            _id: 12,
-            sender: 'Hưng',
-            receiver: 'Chung',
-            content: 'Nay lạnh, nghỉ',
-            time: '20-11-2019 10:20'
-        },{
-            _id: 13,
-            sender: 'Chung',
-            receiver: 'Hưng',
-            content: 'Tối có phải đi học ko?',
-            time: '20-11-2019 10:19'
-        },
-        {
-            _id: 14,
-            sender: 'Hưng',
-            receiver: 'Chung',
-            content: 'Nay lạnh, nghỉ',
-            time: '20-11-2019 10:20'
-        },
-        {
-            _id: 15,
-            sender: 'Chung',
-            receiver: 'Hưng',
-            content: 'Tối có phải đi học ko?',
-            time: '20-11-2019 10:19'
-        },
-        {
-            _id: 16,
-            sender: 'Hưng',
-            receiver: 'Chung',
-            content: 'Nay lạnh, nghỉ',
-            time: '20-11-2019 10:20'
-        }
-    ];
-
-
 export default function MessageHistory(props) {
     const classes = useStyles();
+    const [listFriend, setListFriend] = useState([]);
+    const [listMessage, setListMessage] = useState([]);
+    const [chosenFriend, setChosenFriend] = useState();
+    const [snackbar, setSnackbar] = useState({});
+
+    const closeSnackbar = () => {
+        setSnackbar({
+            message: '',
+            open: false
+        })
+    }
+
+    async function fetchData() {
+        var data = {
+          userId: localStorage.getItem('idUserInfor')
+        }
+        axios.post('http://localhost:4000/get_all_friend', data)
+        .then(result => {
+          if (result.status === 201){
+            for(var i = 0; i < result.data.length; i++){
+                setChosenFriend(result.data[i]._id);
+                break;
+            }
+            setListFriend(result.data);
+          } else {
+            setSnackbar({
+                message: 'Internal server error',
+                open: true
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    };
+    
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+
+        var data = {
+            chosenFriend: chosenFriend,
+            idUserInfor: localStorage.getItem('idUserInfor')
+        };
+        axios.post('http://localhost:4000/get_list_message', data)
+        .then(result => {
+            console.log(result)
+            if (result.status === 201){
+               setListMessage(result.data);
+            } else {
+                setSnackbar({
+                    message: 'Internal server error',
+                    open: true
+                });
+            }
+        })
+        .catch(err => {
+            setSnackbar({
+                message: 'Internal server error',
+                open: true
+            });
+        })
+    }, [chosenFriend]);
 
     return (
        <React.Fragment>
@@ -205,29 +159,29 @@ export default function MessageHistory(props) {
                 >
                     <div className={classes.toolbar} />
                     <List>
-                    {['Hưng Phùng', 'Chung Biện', 'No Name', 'Đẹp Trai'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>
-                                <Avatar alt="Hung Con" src="./images/per-avatar.jpg"  />
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
+                        {listFriend.map(friend => (
+                            <ListItem button key={friend._id} onClick={() => setChosenFriend(friend._id)} className={friend._id === chosenFriend ? classes.chosen : ''}>
+                                <ListItemIcon>
+                                    <Avatar alt="Hung Con" src="./images/per-avatar.jpg"  />
+                                </ListItemIcon>
+                                <ListItemText primary={friend.firstName + " " + friend.lastName} />
+                            </ListItem>
+                        ))}
                     </List>
                 </Drawer>
                 <div className={classes.content}>
                     <div className={classes.listMessage} >
-                        { receiveds.map( msg => (
-                                <Grid container  key={msg._id} justify={msg.sender === 'Hưng' ? 'flex-end' : 'flex-start'}>
+                        {listMessage.map( msg => (
+                                <Grid container  key={msg._id} justify={msg.sender === localStorage.getItem('idUserInfor') ? 'flex-end' : 'flex-start'}>
                                     {
-                                        msg.sender === 'Hưng' ?     
-                                        <Grid item></Grid> 
+                                        msg.sender === localStorage.getItem('idUserInfor') ?     
+                                    <Grid item></Grid> 
                                         :
                                         <Grid item>
                                             <Avatar alt="Hung Con" src="./images/per-avatar.jpg"  />
                                         </Grid>
                                     }
-                                    <Grid item  className={msg.sender ===  'Chung'? classes.receivedMsg: classes.sendMsg}>
+                                    <Grid item  className={msg.receiver ===  localStorage.getItem('idUserInfor') ? classes.receivedMsg: classes.sendMsg}>
                                         <Typography>
                                             {msg.content}
                                         </Typography>
@@ -253,9 +207,15 @@ export default function MessageHistory(props) {
                     </div>
                 </div>
                 <div className={classes.statistic}>
-                    Count message: 100
+                    Count message: {listMessage.length}
                 </div>
             </div>
+            <Snackbar
+                autoHideDuration={2000}
+                message={snackbar.message}
+                open={snackbar.open}
+                onClose={closeSnackbar}
+            />
        </React.Fragment>
     );
 }
