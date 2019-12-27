@@ -47,13 +47,16 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: '#ebebeb',
         padding: '8px',
         marginRight: theme.spacing(2),
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.spacing(2),
+        marginTop: '5px'
     },
     sendMsg: {
         borderRadius: '3px',
-        backgroundColor: '#05728f',
+        backgroundColor: '#05728c',
+        color: 'white',
         padding: '8px',
         marginRight: theme.spacing(4),
+        marginTop: '5px'
     },
     time: {
         fontSize: '13px',
@@ -80,6 +83,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function MessageHistory(props) {
     const classes = useStyles();
+    const [status, setStatus] = useState(false);
+    const [sendMessage, setSendMessage] = useState('');
     const [listFriend, setListFriend] = useState([]);
     const [listMessage, setListMessage] = useState([]);
     const [chosenFriend, setChosenFriend] = useState();
@@ -90,7 +95,40 @@ export default function MessageHistory(props) {
             message: '',
             open: false
         })
-    }
+    };
+
+    const handleChange = (event) => {
+        setSendMessage(event.target.value);
+    };
+
+    const handleKeyPress = (event) => {
+        const key = event.key;
+    
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+          return;
+        }
+    
+        if (key === 'Enter') {
+            storeMessage();
+        }
+    };
+
+    const storeMessage = () => {
+        var data = {
+            sender: localStorage.getItem('idUserInfor'),
+            receiver: chosenFriend,
+            content: sendMessage
+        };
+        axios.post('http://localhost:4000/store_message', data)
+        .then(result => {
+            console.log(result);
+            setStatus(!status);
+            setSendMessage('');
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    };
 
     async function fetchData() {
         var data = {
@@ -121,7 +159,6 @@ export default function MessageHistory(props) {
     }, []);
 
     useEffect(() => {
-
         var data = {
             chosenFriend: chosenFriend,
             idUserInfor: localStorage.getItem('idUserInfor')
@@ -144,7 +181,7 @@ export default function MessageHistory(props) {
                 open: true
             });
         })
-    }, [chosenFriend]);
+    }, [chosenFriend, status]);
 
     return (
        <React.Fragment>
@@ -200,8 +237,11 @@ export default function MessageHistory(props) {
                             label="Message"
                             margin="normal"
                             variant="outlined"
+                            onKeyPress={handleKeyPress}
+                            value={sendMessage}
+                            onChange={handleChange}
                         />
-                        <Fab color="primary" className={classes.button}>
+                        <Fab color="primary" className={classes.button} onClick={storeMessage}>
                             <Send />
                         </Fab>
                     </div>

@@ -134,7 +134,6 @@ export default function PersonalInformation(props) {
                             error={!!(errors && errors.phoneNumber)}
                             helperText={(errors && errors.phoneNumber) ? errors.phoneNumber.message : ''}
                             value={userInfor.phoneNumber}
-                            // value='a'
                             inputRef={register({
                                 required: 'Required',
                             })}

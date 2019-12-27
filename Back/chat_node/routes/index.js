@@ -248,21 +248,16 @@ router.post('/find_friend', function(req, res){
 
 router.post('/store_message', function(req, res){
   var message = {
-    sender: '5dee0f7b5ddb4c224ca3b593',
-    receiver: '5df6fbd61f0f981228b6e1b2',
-    content: 'Có. Mấy giờ thế?'
-  };
-  var message1 = {
-    sender: '5df6fbd61f0f981228b6e1b2',
-    receiver: '5dee0f7b5ddb4c224ca3b593',
-    content: 'Có. Mấy giờ thế?'
+    sender: req.body.sender,
+    receiver: req.body.receiver,
+    content: req.body.content
   };
   
-  Message.insertMany([message, message1], function(err){
+  Message.create(message, function(err){
     if( err) {
-      console.log(err);
+      res.status(401).send({message: 'Internal server error.'});
     } else {
-      console.log('ok');
+      res.status(201).send({message: 'OK'});
     }
   })
 });
@@ -278,7 +273,6 @@ router.post('/get_list_message', function(req, res){
     if( err) {
       res.status(401).send({message: 'Internal server error.'});
     } else {
-      console.log(doc);
       res.status(201).send(doc)
     }
   });
