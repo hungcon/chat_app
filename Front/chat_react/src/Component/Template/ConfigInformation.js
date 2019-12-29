@@ -11,6 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import useForm from "react-hook-form";
 import Snackbar from '@material-ui/core/Snackbar';
 import axios from "axios";
+import {firebaseConnect} from '../../firebaseConnect';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 function getSteps() {
-  return ['Enter your email', 'Choose your avatar', 'Welcome to Fakebook'];
+  return ['Enter your email', 'Choose your avatar', 'Welcome to Chat App'];
 }
 
 
@@ -62,7 +63,7 @@ export default function ConfigInformation(props) {
     const classes = useStyles();
     const { handleSubmit, register, errors } = useForm();
     const [userInfor , setUserInfor] = useState({firstName:'', lastName: '', phoneNumber: '', email: ''})
-    //const [avatarFile, setAvatarFile] = useState(null);
+    const [avatarPath, setAvatarPath] = useState('');
     const [snackbar, setSnackbar] = useState({});
     const fileInput = useRef(null);
     const [activeStep, setActiveStep] = useState(0);
@@ -72,11 +73,29 @@ export default function ConfigInformation(props) {
     const onSubmit = values => {
         setUserInfor(values);
         handleNext();
-      };
+    };
+
+    const uploadAvatar = (file) => {
+        var storageRef = firebaseConnect.storage().ref();
+        var metadata = {
+            contentType: file.type
+          };
+        var uploadTask = storageRef.child('images/' + file.name).put(file, metadata);
+        uploadTask.on('state_changed', function(snapshot){
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+          }, function(error) {
+            console.log(error);
+          }, function() {
+            uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+              setAvatarPath(downloadURL);
+            });
+          });
+    };
     
     const getAvatarFile = (event) => {
         event.preventDefault();
-        // setAvatarFile(fileInput.current.files[0]);
+        uploadAvatar(fileInput.current.files[0]);
         handleNext();
     }
 
@@ -103,6 +122,7 @@ export default function ConfigInformation(props) {
             let message = result.data.message;
             if (result.status === 201){
                 if(result.data.message === "OK"){
+                    localStorage.setItem('idUserInfor', result.data.id);
                     props.history.push('/home');
                 } else {
                     setSnackbar({
@@ -221,7 +241,7 @@ export default function ConfigInformation(props) {
                     }
                     {activeStep === 1 &&
                     <form onSubmit={getAvatarFile} className={classes.form}>
-                        <img src="./images/avatar.png" className={classes.img} alt=''/>
+                        <img src={avatarPath || "./images/avatar.png"} className={classes.img} alt=''/>
                         <div className={classes.input}>
                             <input
                                 accept="image/*"

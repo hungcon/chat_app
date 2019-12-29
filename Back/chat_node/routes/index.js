@@ -43,16 +43,16 @@ router.post('/sign-in', function(req, res) {
     if (err) {
       res.status(401).send({message: 'Internal server error.'});
     } else {
-      if (doc === null) {
+      if (doc == null) {
         res.status(201).send({message: 'Account is not exists.'})
       } else {
         if (doc.password == md5(req.body.password)){
           // Lấy về id của userInfor
-          UserInfor.findOne({userName: req.body.userName}, function(err, doc){
+          UserInfor.findOne({userName: req.body.userName}, function(err, doc1){
             if (err) {
               res.status(401).send({message: 'Internal server error.'});
             } else {
-              res.status(201).send({message: 'OK', checkConfiguration: doc.checkConfiguration, idUserInfor: doc._id});
+              res.status(201).send({message: 'OK', checkConfiguration: doc1 == null ? 0 : doc.checkConfiguration, idUserInfor: doc1 == null ? '' : doc1._id});
             }
           });
         } else {
