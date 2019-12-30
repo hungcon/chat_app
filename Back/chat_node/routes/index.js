@@ -134,7 +134,8 @@ router.post('/get_all_friend_request', function(req, res){
     email: req.body.email,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    phoneNumber: req.body.phoneNumber
+    phoneNumber: req.body.phoneNumber,
+    avatarURL: req.body.avatarURL
   };
   UserInfor.create(userInfor, function(err, doc){
     if(err){

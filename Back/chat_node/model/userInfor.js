@@ -20,6 +20,9 @@ var UserInforSchema = new mongoose.Schema({
   lastName: {
     type: String,
   },
+  avatarURL: {
+    type: String
+  },
   friends: [
     { type: Schema.Types.ObjectId, 
       ref: 'Friends'

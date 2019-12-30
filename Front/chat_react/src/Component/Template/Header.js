@@ -66,6 +66,7 @@ const useStyles = makeStyles(theme => ({
 export default function Header(props) {
   const classes = useStyles();
   const [listRequest, setListRequest] = useState([]);
+  const [userInfor, setUserInfor] = useState({});
   const [invisible, setInvisible] = useState(false);
   const [menuState, setMenuState] = useState({anchorEl: null});
   const [notiState, setNotiState] = useState({anchorEl: null});
@@ -173,6 +174,19 @@ export default function Header(props) {
     fetchData();
   }, [status]);
 
+  useEffect( () => {
+    var data = {
+      userInforId: localStorage.getItem('idUserInfor')
+    }
+    axios.post('http://localhost:4000/get_user_infor', data)
+    .then(result => {
+      setUserInfor(result.data);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }, [])
+
   return (
       <AppBar position="relative" className = {classes.appBar}>
         <Toolbar>
@@ -183,7 +197,7 @@ export default function Header(props) {
           <Typography className={classes.typo}></Typography>
           {/* Avatar */}
           <React.Fragment>
-            <Avatar alt="Hung Con" src="./images/per-avatar.jpg" />
+            <Avatar alt={userInfor.firstName+" "+userInfor.lastName} src={userInfor.avatarURL} />
           </React.Fragment>
           {/* End Avatar */}
          

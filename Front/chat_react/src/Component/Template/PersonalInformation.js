@@ -116,7 +116,7 @@ export default function PersonalInformation(props) {
            <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
                 <Grid item xs={6}>
-                    <img className={classes.img} alt="complex" src="./images/per-avatar.jpg" />
+                    <img className={classes.img} alt="complex" src={userInfor.avatarURL} />
                 </Grid>
                 <Grid item xs={6} className={classes.information}>
                     <Grid container spacing={2} >

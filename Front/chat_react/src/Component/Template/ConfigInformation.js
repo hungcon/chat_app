@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -17,6 +18,9 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       width: '100%',
+    },
+    text: {
+        fontFamily: 'Courgette, cursive'
     },
     instructions: {
       marginTop: theme.spacing(1),
@@ -75,6 +79,12 @@ export default function ConfigInformation(props) {
         handleNext();
     };
 
+    const onImageChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            setAvatarPath(URL.createObjectURL(event.target.files[0]))
+        }
+    }
+
     const uploadAvatar = (file) => {
         var storageRef = firebaseConnect.storage().ref();
         var metadata = {
@@ -89,14 +99,18 @@ export default function ConfigInformation(props) {
           }, function() {
             uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
               setAvatarPath(downloadURL);
+              handleNext();
             });
           });
     };
     
     const getAvatarFile = (event) => {
         event.preventDefault();
-        uploadAvatar(fileInput.current.files[0]);
-        handleNext();
+        if (fileInput.current.files[0] ===  undefined){
+            window.alert('Choose your avatar first.');
+        } else {
+            uploadAvatar(fileInput.current.files[0]);
+        }
     }
 
     const handleNext = () => {
@@ -116,6 +130,7 @@ export default function ConfigInformation(props) {
 
     const finish = () => {
         userInfor.userName = localStorage.getItem('userName');
+        userInfor.avatarURL = avatarPath;
         axios.post('http://localhost:4000/create_user_information',userInfor)
         .then(result => {
             //Lấy thông điệp trả về
@@ -251,6 +266,7 @@ export default function ConfigInformation(props) {
                                 type="file"
                                 name="avatarPath"
                                 ref={fileInput}
+                                onChange={onImageChange}
                             />
                             <label htmlFor="contained-button-file">
                                 <Button variant="contained" component="span" color="secondary">
@@ -273,6 +289,12 @@ export default function ConfigInformation(props) {
                     }
                     {activeStep === 2 &&
                         <div>
+                            <Typography component="h3" variant="h4" align="center" color="textPrimary" gutterBottom className={classes.text} >
+                                Welcome to chat app
+                            </Typography>
+                            <Typography variant="h6" align="center" color="textSecondary" paragraph className={classes.text}>   
+                                Click Finish button to finish config information      
+                            </Typography>
                             <img src="./images/success.png" alt="" className={classes.img}/>
                             <Button disabled={activeStep === 0} onClick={handleBack} className={classes.back}>
                                 Back
@@ -283,7 +305,7 @@ export default function ConfigInformation(props) {
                                 color="primary"
                                 className={classes.next}
                             >
-                                Next
+                                Finish
                             </Button>
                         </div>
                     }
