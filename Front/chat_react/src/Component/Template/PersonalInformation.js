@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Header from './Header';
 import Grid from '@material-ui/core/Grid';
@@ -14,6 +14,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Snackbar from '@material-ui/core/Snackbar';
 import axios from 'axios';
 import useForm from "react-hook-form";
+import {firebaseConnect} from '../../firebaseConnect';
 
 const useStyles = makeStyles(theme => ({
    img: {
@@ -38,18 +39,24 @@ const useStyles = makeStyles(theme => ({
    },
    btn: {
        margin: theme.spacing(3),
-   }
+   }, 
+   upload: {
+        display: 'none',
+   },
 }));
 
 export default function PersonalInformation(props) {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [snackbar, setSnackbar] = useState({});
+    const fileInput = useRef(null);
+    const [avatarPath, setAvatarPath] = useState('');
     const [userInfor, setUserInfor] = useState({phoneNumber: '', firstName: '', lastName: '', email: ''});
     const { handleSubmit, register, errors } = useForm();
 
     const onSubmit = values => {
         values.userName = localStorage.getItem('userName');
+        values.avatarURL = avatarPath;
         axios.post('http://localhost:4000/update_user_information', values)
         .then(result =>{
             if (result.status === 201){
@@ -107,6 +114,39 @@ export default function PersonalInformation(props) {
             message: '',
             open: false
         })
+    };
+
+    const onImageChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            setAvatarPath(URL.createObjectURL(event.target.files[0]))
+        }
+    };
+
+    const uploadAvatar = (file) => {
+        var storageRef = firebaseConnect.storage().ref();
+        var metadata = {
+            contentType: file.type
+          };
+        var uploadTask = storageRef.child('images/' + file.name).put(file, metadata);
+        uploadTask.on('state_changed', function(snapshot){
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+          }, function(error) {
+            console.log(error);
+          }, function() {
+            uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+              setAvatarPath(downloadURL);
+            });
+          });
+    };
+    
+    const getAvatarFile = (event) => {
+        event.preventDefault();
+        if (fileInput.current.files[0] ===  undefined){
+            window.alert('Choose your avatar first.');
+        } else {
+            uploadAvatar(fileInput.current.files[0]);
+        }
     }
 
     return (
@@ -116,7 +156,26 @@ export default function PersonalInformation(props) {
            <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
                 <Grid item xs={6}>
-                    <img className={classes.img} alt="complex" src={userInfor.avatarURL} />
+                    <img className={classes.img} alt="complex" src={ avatarPath || userInfor.avatarURL} />
+                    <form onSubmit={getAvatarFile} className={classes.form}>
+                        <div className={classes.input}>
+                            <input
+                                accept="image/*"
+                                className={classes.upload}
+                                id="contained-button-file"
+                                multiple
+                                type="file"
+                                name="avatarPath"
+                                ref={fileInput}
+                                onChange={onImageChange}
+                            />
+                            <label htmlFor="contained-button-file">
+                                <Button variant="contained" component="span" color="secondary">
+                                Change your avatar
+                                </Button>
+                            </label>
+                        </div>
+                    </form>
                 </Grid>
                 <Grid item xs={6} className={classes.information}>
                     <Grid container spacing={2} >
