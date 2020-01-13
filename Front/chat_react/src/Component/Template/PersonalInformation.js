@@ -56,6 +56,7 @@ export default function PersonalInformation(props) {
 
     const onSubmit = values => {
         values.userName = localStorage.getItem('userName');
+        uploadAvatar(fileInput.current.files[0]);
         values.avatarURL = avatarPath;
         axios.post('https://api-chat-hust.herokuapp.com/update_user_information', values)
         .then(result =>{
@@ -142,6 +143,7 @@ export default function PersonalInformation(props) {
     
     const getAvatarFile = (event) => {
         event.preventDefault();
+        console.log('dsadsa');
         if (fileInput.current.files[0] ===  undefined){
             window.alert('Choose your avatar first.');
         } else {
@@ -170,8 +172,8 @@ export default function PersonalInformation(props) {
                                 onChange={onImageChange}
                             />
                             <label htmlFor="contained-button-file">
-                                <Button variant="contained" component="span" color="secondary">
-                                Change your avatar
+                                <Button variant="contained" component="span" color="secondary" >
+                                    Change avatar
                                 </Button>
                             </label>
                         </div>
